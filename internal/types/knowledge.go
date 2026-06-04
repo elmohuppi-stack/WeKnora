@@ -14,6 +14,8 @@ const (
 	KnowledgeTypeManual = "manual"
 	// KnowledgeTypeFAQ represents the FAQ knowledge type
 	KnowledgeTypeFAQ = "faq"
+	// KnowledgeTypeYouTube represents the YouTube video knowledge type
+	KnowledgeTypeYouTube = "youtube"
 )
 
 // Channel constants identify through which channel a knowledge entry was ingested.
@@ -30,6 +32,7 @@ const (
 	ChannelIM               = "im"                // Generic IM channel
 	ChannelNotion           = "notion"            // Notion
 	ChannelYuque            = "yuque"             // Yuque (语雀)
+	ChannelYouTube          = "youtube"           // YouTube
 )
 
 // Knowledge parse status constants
@@ -209,6 +212,36 @@ type ManualKnowledgePayload struct {
 	Status  string `json:"status"`
 	TagID   string `json:"tag_id"`
 	Channel string `json:"channel"`
+}
+
+// YouTubeMetadata stores metadata for YouTube video knowledge entries.
+type YouTubeMetadata struct {
+	VideoID          string `json:"video_id"`
+	ChannelName      string `json:"channel_name"`
+	ChannelURL       string `json:"channel_url"`
+	Duration         int    `json:"duration"`          // in seconds
+	ThumbnailURL     string `json:"thumbnail_url"`
+	Description      string `json:"description"`
+	PublishedAt      string `json:"published_at"`
+	Language         string `json:"language"`
+	TranscriptSource string `json:"transcript_source"` // "native" or "generated"
+}
+
+// YouTubeKnowledgePayload represents the payload for creating knowledge from a YouTube video.
+type YouTubeKnowledgePayload struct {
+	URL      string `json:"url" binding:"required"`
+	TagID    string `json:"tag_id"`
+	Title    string `json:"title"`
+	Language string `json:"language"` // preferred transcript language
+	Channel  string `json:"channel"`
+}
+
+// GetChannel returns the ingestion channel, defaulting to "youtube".
+func (p *YouTubeKnowledgePayload) GetChannel() string {
+	if p.Channel != "" {
+		return p.Channel
+	}
+	return ChannelYouTube
 }
 
 // KnowledgeSearchScope defines a (tenant_id, knowledge_base_id) scope for knowledge search (e.g. own KBs + shared KBs).

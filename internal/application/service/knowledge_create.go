@@ -794,6 +794,177 @@ func (s *knowledgeService) CreateKnowledgeFromManual(ctx context.Context,
 	return knowledge, nil
 }
 
+// CreateKnowledgeFromYouTube creates a knowledge entry from a YouTube video URL.
+// It fetches the video transcript and metadata, then enqueues async processing.
+func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
+	kbID string, payload *types.YouTubeKnowledgePayload, channel string,
+) (*types.Knowledge, error) {
+	logger.Info(ctx, "Start creating knowledge from YouTube")
+
+	if payload == nil || payload.URL == "" {
+		return nil, werrors.NewBadRequestError("YouTube URL is required")
+	}
+
+	// Extract video ID from the YouTube URL
+	videoID, err := ExtractYouTubeVideoID(payload.URL)
+	if err != nil {
+		logger.Errorf(ctx, "Invalid YouTube URL: %s, error: %v", payload.URL, err)
+		return nil, werrors.NewBadRequestError("无效的YouTube视频链接")
+	}
+
+	// Get knowledge base configuration
+	kb, err := s.kbService.GetKnowledgeBaseByID(ctx, kbID)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to get knowledge base: %v", err)
+		return nil, err
+	}
+
+	if err := s.checkStorageEngineConfigured(ctx, kb); err != nil {
+		return nil, err
+	}
+
+	tenantID := ctx.Value(types.TenantIDContextKey).(uint64)
+
+	// Check if this video URL already exists in the knowledge base
+	fileHash := calculateStr(payload.URL)
+	exists, existingKnowledge, err := s.repo.CheckKnowledgeExists(ctx, tenantID, kbID, &types.KnowledgeCheckParams{
+		Type:     types.KnowledgeTypeYouTube,
+		URL:      payload.URL,
+		FileHash: fileHash,
+	})
+	if err != nil {
+		logger.Errorf(ctx, "Failed to check knowledge existence: %v", err)
+		return nil, err
+	}
+	if exists {
+		logger.Infof(ctx, "YouTube video already exists: %s", payload.URL)
+		existingKnowledge.CreatedAt = time.Now()
+		existingKnowledge.UpdatedAt = time.Now()
+		if err := s.repo.UpdateKnowledge(ctx, existingKnowledge); err != nil {
+			logger.Errorf(ctx, "Failed to update existing knowledge: %v", err)
+			return nil, err
+		}
+		return existingKnowledge, types.NewDuplicateYouTubeError(existingKnowledge)
+	}
+
+	// Check storage quota
+	tenantInfo := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
+	if tenantInfo.StorageQuota > 0 && tenantInfo.StorageUsed >= tenantInfo.StorageQuota {
+		logger.Error(ctx, "Storage quota exceeded")
+		return nil, types.NewStorageQuotaExceededError()
+	}
+
+	// Fetch YouTube info (transcript + metadata) synchronously
+	// so we can create the knowledge entry with complete info.
+	youtubeInfo, err := FetchYouTubeInfo(ctx, videoID, payload.Language)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to fetch YouTube info for video %s: %v", videoID, err)
+		return nil, werrors.NewBadRequestError(fmt.Sprintf("无法获取YouTube视频信息: %v", err))
+	}
+
+	// Build title: use payload title, then YouTube title, then video ID
+	title := payload.Title
+	if title == "" {
+		title = youtubeInfo.Title
+	}
+	if title == "" {
+		title = fmt.Sprintf("YouTube Video - %s", videoID)
+	}
+
+	// Build YouTube metadata
+	youtubeMeta := &types.YouTubeMetadata{
+		VideoID:          videoID,
+		ChannelName:      youtubeInfo.ChannelName,
+		ChannelURL:       youtubeInfo.ChannelURL,
+		Duration:         youtubeInfo.Duration,
+		ThumbnailURL:     youtubeInfo.ThumbnailURL,
+		Description:      youtubeInfo.Description,
+		PublishedAt:      youtubeInfo.PublishedAt,
+		Language:         youtubeInfo.Language,
+		TranscriptSource: youtubeInfo.TranscriptSource,
+	}
+
+	youtubeMetaJSON, err := json.Marshal(youtubeMeta)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to marshal YouTube metadata: %v", err)
+		return nil, err
+	}
+
+	// Create knowledge record
+	knowledge := &types.Knowledge{
+		ID:               uuid.New().String(),
+		TenantID:         tenantID,
+		KnowledgeBaseID:  kbID,
+		Type:             types.KnowledgeTypeYouTube,
+		Channel:          defaultChannel(channel),
+		Title:            title,
+		Source:           payload.URL,
+		FileType:         "youtube_transcript",
+		FileHash:         fileHash,
+		ParseStatus:      "pending",
+		EnableStatus:     "disabled",
+		CreatedAt:        time.Now(),
+		UpdatedAt:        time.Now(),
+		EmbeddingModelID: kb.EmbeddingModelID,
+		TagID:            payload.TagID,
+		Metadata:         types.JSON(youtubeMetaJSON),
+	}
+
+	// Save knowledge record
+	logger.Infof(ctx, "Saving knowledge record to database, ID: %s", knowledge.ID)
+	if err := s.repo.CreateKnowledge(ctx, knowledge); err != nil {
+		logger.Errorf(ctx, "Failed to create knowledge record: %v", err)
+		return nil, err
+	}
+
+	// Enqueue YouTube processing task
+	logger.Info(ctx, "Enqueuing YouTube processing task to Asynq")
+	enableQuestionGeneration := false
+	questionCount := 3
+	if kb.QuestionGenerationConfig != nil && kb.QuestionGenerationConfig.Enabled {
+		enableQuestionGeneration = true
+		if kb.QuestionGenerationConfig.QuestionCount > 0 {
+			questionCount = kb.QuestionGenerationConfig.QuestionCount
+		}
+	}
+
+	lang, _ := types.LanguageFromContext(ctx)
+	taskPayload := types.DocumentProcessPayload{
+		TenantID:                 tenantID,
+		KnowledgeID:              knowledge.ID,
+		KnowledgeBaseID:          kbID,
+		YouTubeURL:               payload.URL,
+		YouTubeMetadataJSON:      string(youtubeMetaJSON),
+		EnableMultimodel:         false,
+		EnableQuestionGeneration: enableQuestionGeneration,
+		QuestionCount:            questionCount,
+		Language:                 lang,
+		Passages:                 []string{youtubeInfo.Transcript},
+	}
+
+	langfuse.InjectTracing(ctx, &taskPayload)
+	payloadBytes, err := json.Marshal(taskPayload)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to marshal YouTube process task payload: %v", err)
+		return knowledge, nil
+	}
+
+	task := asynq.NewTask(
+		types.TypeDocumentProcess,
+		payloadBytes,
+		documentProcessTaskOptions(s.config, asynq.MaxRetry(3))...,
+	)
+	info, err := s.task.Enqueue(task)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to enqueue YouTube process task: %v", err)
+		return knowledge, nil
+	}
+	logger.Infof(ctx, "Enqueued YouTube process task: id=%s queue=%s knowledge_id=%s", info.ID, info.Queue, knowledge.ID)
+
+	logger.Infof(ctx, "Knowledge from YouTube created successfully, ID: %s", knowledge.ID)
+	return knowledge, nil
+}
+
 // createKnowledgeFromPassageInternal consolidates the common logic for creating knowledge from passages.
 // When syncMode is true, chunk processing is performed synchronously; otherwise, it's processed asynchronously.
 func (s *knowledgeService) createKnowledgeFromPassageInternal(ctx context.Context,

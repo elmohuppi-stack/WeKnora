@@ -450,6 +450,76 @@ func (h *KnowledgeHandler) CreateKnowledgeFromURL(c *gin.Context) {
 	})
 }
 
+// CreateKnowledgeFromYouTube godoc
+// @Summary      从YouTube视频创建知识
+// @Description  通过YouTube视频URL自动获取字幕/转录文本和元数据，创建知识条目
+// @Tags         知识管理
+// @Accept       json
+// @Produce      json
+// @Param        id       path      string                          true  "知识库ID"
+// @Param        request  body      types.YouTubeKnowledgePayload   true  "YouTube请求"
+// @Success      201      {object}  map[string]interface{}          "创建的知识"
+// @Failure      400      {object}  errors.AppError                 "请求参数错误"
+// @Failure      409      {object}  map[string]interface{}          "URL重复"
+// @Security     Bearer
+// @Security     ApiKeyAuth
+// @Router       /knowledge-bases/{id}/knowledge/youtube [post]
+func (h *KnowledgeHandler) CreateKnowledgeFromYouTube(c *gin.Context) {
+	ctx := c.Request.Context()
+	logger.Info(ctx, "Start creating knowledge from YouTube")
+
+	// Validate access to the knowledge base (only owner or admin/editor can create)
+	_, kbID, effectiveTenantID, permission, err := h.validateKnowledgeBaseAccess(c)
+	if err != nil {
+		c.Error(err)
+		return
+	}
+	ctx = context.WithValue(ctx, types.TenantIDContextKey, effectiveTenantID)
+
+	// Check write permission
+	if permission != types.OrgRoleAdmin && permission != types.OrgRoleEditor {
+		c.Error(errors.NewForbiddenError("No permission to create knowledge"))
+		return
+	}
+
+	var req types.YouTubeKnowledgePayload
+	if err := c.ShouldBindJSON(&req); err != nil {
+		logger.Error(ctx, "Failed to parse YouTube knowledge request", err)
+		c.Error(errors.NewBadRequestError(err.Error()))
+		return
+	}
+
+	logger.Infof(ctx, "Creating knowledge from YouTube, knowledge base ID: %s, URL: %s",
+		secutils.SanitizeForLog(kbID), secutils.SanitizeForLog(req.URL))
+
+	// Create knowledge entry from the YouTube URL
+	knowledge, err := h.kgService.CreateKnowledgeFromYouTube(ctx, kbID, &req, req.GetChannel())
+	// Check for duplicate knowledge error
+	if err != nil {
+		if h.handleDuplicateKnowledgeError(c, err, knowledge, "youtube_url") {
+			return
+		}
+		if appErr, ok := errors.IsAppError(err); ok {
+			c.Error(appErr)
+			return
+		}
+		logger.ErrorWithFields(ctx, err, nil)
+		c.Error(errors.NewInternalServerError(err.Error()))
+		return
+	}
+
+	logger.Infof(
+		ctx,
+		"Knowledge created successfully from YouTube, ID: %s, title: %s",
+		secutils.SanitizeForLog(knowledge.ID),
+		secutils.SanitizeForLog(knowledge.Title),
+	)
+	c.JSON(http.StatusCreated, gin.H{
+		"success": true,
+		"data":    knowledge,
+	})
+}
+
 // CreateManualKnowledge godoc
 // @Summary      手工创建知识
 // @Description  手工录入Markdown格式的知识内容

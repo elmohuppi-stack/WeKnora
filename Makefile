@@ -1,67 +1,75 @@
-.PHONY: help build run test clean docker-build-app docker-build-docreader docker-build-frontend docker-build-all docker-run migrate-up migrate-down docker-restart docker-stop start-all stop-all start-ollama stop-ollama build-images build-images-app build-images-docreader build-images-frontend clean-images check-env list-containers pull-images show-platform dev-start dev-stop dev-restart dev-logs dev-status dev-app dev-frontend docs install-swagger build-lite run-lite package-lite
+.PHONY: help build run test clean docker-build-app docker-build-docreader docker-build-frontend docker-build-all docker-run migrate-up migrate-down docker-restart docker-stop start stop logs status restart url stop-all start-all start-ollama stop-ollama build-images build-images-app build-images-docreader build-images-frontend clean-images check-env list-containers pull-images show-platform dev-start dev-stop dev-restart dev-logs dev-status dev-app dev-frontend docs install-swagger build-lite run-lite package-lite
 
 # Show help
 help:
-	@echo "WeKnora Makefile 帮助"
+	@echo "WeKnora Makefile"
 	@echo ""
-	@echo "基础命令:"
-	@echo "  build             构建应用"
-	@echo "  run               运行应用"
-	@echo "  test              运行测试"
-	@echo "  clean             清理构建文件"
+	@echo "Basic Commands:"
+	@echo "  build             Build the application"
+	@echo "  run               Build and run the application"
+	@echo "  test              Run tests"
+	@echo "  clean             Clean build artifacts"
 	@echo ""
-	@echo "Docker 命令:"
-	@echo "  docker-build-app       构建应用 Docker 镜像 (wechatopenai/weknora-app)"
-	@echo "  docker-build-docreader 构建文档读取器镜像 (wechatopenai/weknora-docreader)"
-	@echo "  docker-build-frontend  构建前端镜像 (wechatopenai/weknora-ui)"
-	@echo "  docker-build-all       构建所有 Docker 镜像"
-	@echo "  docker-run            运行 Docker 容器"
-	@echo "  docker-stop           停止 Docker 容器"
-	@echo "  docker-restart        重启 Docker 容器"
+	@echo "Docker Commands:"
+	@echo "  docker-build-app        Build app Docker image (wechatopenai/weknora-app)"
+	@echo "  docker-build-docreader  Build docreader Docker image (wechatopenai/weknora-docreader)"
+	@echo "  docker-build-frontend   Build frontend Docker image (wechatopenai/weknora-ui)"
+	@echo "  docker-build-all        Build all Docker images"
+	@echo "  docker-run             Run Docker containers"
+	@echo "  docker-stop            Stop Docker containers"
+	@echo "  docker-restart         Restart Docker containers"
 	@echo ""
-	@echo "服务管理:"
-	@echo "  start-all         启动所有服务"
-	@echo "  stop-all          停止所有服务"
-	@echo "  start-ollama      仅启动 Ollama 服务"
+	@echo "Local Docker Start/Stop:"
+	@echo "  start              Start all Docker services (make start)"
+	@echo "  stop               Stop all Docker services (make stop)"
+	@echo "  restart            Restart all Docker services (make restart)"
+	@echo "  logs               Tail logs from all containers (make logs)"
+	@echo "  status             Show container status (make status)"
+	@echo "  url                Show service URLs (make url)"
 	@echo ""
-	@echo "镜像构建:"
-	@echo "  build-images      从源码构建所有镜像"
-	@echo "  build-images-app  从源码构建应用镜像"
-	@echo "  build-images-docreader 从源码构建文档读取器镜像"
-	@echo "  build-images-frontend  从源码构建前端镜像"
-	@echo "  clean-images      清理本地镜像"
+	@echo "Service Management:"
+	@echo "  start-all          Start all services (script)"
+	@echo "  stop-all           Stop all services (script)"
+	@echo "  start-ollama       Start Ollama only"
 	@echo ""
-	@echo "数据库:"
-	@echo "  migrate-up        执行数据库迁移"
-	@echo "  migrate-down      回滚数据库迁移"
+	@echo "Image Building:"
+	@echo "  build-images      Build all images from source"
+	@echo "  build-images-app  Build app image from source"
+	@echo "  build-images-docreader  Build docreader image from source"
+	@echo "  build-images-frontend   Build frontend image from source"
+	@echo "  clean-images      Clean local images"
 	@echo ""
-	@echo "开发工具:"
-	@echo "  fmt               格式化代码"
-	@echo "  lint              代码检查"
-	@echo "  deps              安装依赖"
-	@echo "  docs              生成 Swagger API 文档"
-	@echo "  install-swagger   安装 swag 工具"
+	@echo "Database:"
+	@echo "  migrate-up        Run database migrations"
+	@echo "  migrate-down      Rollback database migrations"
 	@echo ""
-	@echo "环境检查:"
-	@echo "  check-env         检查环境配置"
-	@echo "  list-containers   列出运行中的容器"
-	@echo "  pull-images       拉取最新镜像"
-	@echo "  show-platform     显示当前构建平台"
+	@echo "Development Tools:"
+	@echo "  fmt               Format code"
+	@echo "  lint              Lint code"
+	@echo "  deps              Install dependencies"
+	@echo "  docs              Generate Swagger API docs"
+	@echo "  install-swagger   Install swag tool"
 	@echo ""
-	@echo "开发模式（推荐）:"
-	@echo "  dev-start         启动开发环境基础设施（仅启动依赖服务）"
-	@echo "  dev-stop          停止开发环境"
-	@echo "  dev-restart       重启开发环境"
-	@echo "  dev-logs          查看开发环境日志"
-	@echo "  dev-status        查看开发环境状态"
-	@echo "  dev-app           启动后端应用（本地运行，需先运行 dev-start）"
-	@echo "  dev-frontend      启动前端（本地运行，需先运行 dev-start）"
+	@echo "Environment:"
+	@echo "  check-env         Check environment configuration"
+	@echo "  list-containers   List running containers"
+	@echo "  pull-images       Pull latest images"
+	@echo "  show-platform     Show current build platform"
 	@echo ""
-	@echo "Lite 模式（零外部依赖）:"
-	@echo "  build-lite        构建 Lite 版本（先构建前端到 web/，再构建 Go；SKIP_FRONTEND=1 跳过前端）"
-	@echo "  run-lite          构建并启动 Lite 版本"
-	@echo "  package-lite      构建并打包 Lite 发行包（tarball）"
-	@echo "  package-mac-app   构建并打包 macOS 桌面应用 (.app)"
+	@echo "Development Mode (recommended):"
+	@echo "  dev-start         Start dev infrastructure (dependencies only)"
+	@echo "  dev-stop          Stop dev environment"
+	@echo "  dev-restart       Restart dev environment"
+	@echo "  dev-logs          View dev environment logs"
+	@echo "  dev-status        View dev environment status"
+	@echo "  dev-app           Start backend app locally (requires dev-start first)"
+	@echo "  dev-frontend      Start frontend locally (requires dev-start first)"
+	@echo ""
+	@echo "Lite Mode (zero external dependencies):"
+	@echo "  build-lite        Build Lite version (build frontend to web/, then Go; SKIP_FRONTEND=1 skips frontend)"
+	@echo "  run-lite          Build and run Lite version"
+	@echo "  package-lite      Build and package Lite release tarball"
+	@echo "  package-mac-app   Build and package macOS desktop app (.app)"
 
 # Go related variables
 BINARY_NAME=WeKnora
@@ -172,6 +180,41 @@ docker-restart:
 	@[ -f .env ] || ([ -f .env.example ] && cp .env.example .env || touch .env)
 	docker-compose stop -t 60
 	docker-compose up
+
+# ========== Local Docker Start/Stop ==========
+
+# Start all Docker services (docker compose up -d)
+start:
+	@[ -f .env ] || ([ -f .env.example ] && cp .env.example .env || touch .env)
+	docker compose up -d
+
+# Stop all Docker services (docker compose down)
+stop:
+	docker compose down
+
+# Tail logs from all containers
+logs:
+	docker compose logs -f
+
+# Show container status and resource usage
+status:
+	@echo "=== Container Status ==="
+	docker compose ps
+	@echo ""
+	@echo "=== Resource Usage ==="
+	@docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}" 2>/dev/null || echo "Docker is not running"
+
+# Show service URLs (reads .env for port overrides)
+url:
+	@echo "=============================="
+	@echo " WeKnora Service URLs"
+	@echo "=============================="
+	@echo " Web UI:       http://localhost:$${FRONTEND_PORT:-80}"
+	@echo " Backend API:  http://localhost:$${APP_PORT:-8080}"
+	@echo "=============================="
+
+# Restart all services
+restart: stop start
 
 # Database migrations
 migrate-up:

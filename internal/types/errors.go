@@ -44,3 +44,11 @@ func NewDuplicateURLError(knowledge *Knowledge) *DuplicateKnowledgeError {
 		Knowledge: knowledge,
 	}
 }
+
+// NewDuplicateYouTubeError creates a duplicate YouTube URL error
+func NewDuplicateYouTubeError(knowledge *Knowledge) *DuplicateKnowledgeError {
+	return &DuplicateKnowledgeError{
+		Message:   fmt.Sprintf("YouTube video already exists: %s", knowledge.Source),
+		Knowledge: knowledge,
+	}
+}

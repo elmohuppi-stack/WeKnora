@@ -9,8 +9,10 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"text/template"
 	"time"
 
+	"github.com/Tencent/WeKnora/internal/agent"
 	"github.com/Tencent/WeKnora/internal/application/service/retriever"
 	werrors "github.com/Tencent/WeKnora/internal/errors"
 	"github.com/Tencent/WeKnora/internal/infrastructure/chunker"
@@ -2796,6 +2798,37 @@ func (s *knowledgeService) ProcessDocument(ctx context.Context, t *asynq.Task) e
 		return nil
 	}
 
+	// YouTube import: transcript is already fetched and passed as passages.
+	// Skip the convert/DocReader step and go straight to chunking + embedding.
+	if payload.YouTubeURL != "" {
+		logger.Infof(ctx, "Processing YouTube import for knowledge: %s, URL: %s", payload.KnowledgeID, payload.YouTubeURL)
+
+		// Store YouTube metadata in the knowledge record if provided
+		if payload.YouTubeMetadataJSON != "" {
+			knowledge.Metadata = types.JSON(payload.YouTubeMetadataJSON)
+		}
+
+		// Update knowledge title if available from YouTube metadata
+		if knowledge.Title == "" {
+			knowledge.Title = fmt.Sprintf("YouTube Video - %s", payload.YouTubeURL)
+			knowledge.UpdatedAt = time.Now()
+		}
+
+		// Process the transcript as passages (direct chunking, no conversion needed)
+		if len(payload.Passages) > 0 {
+			s.processDocumentFromPassage(ctx, kb, knowledge, payload.Passages)
+			// After processing, generate a wiki article from the transcript if wiki is enabled
+			s.generateYouTubeWikiArticle(ctx, kb, knowledge, payload)
+		} else {
+			logger.Errorf(ctx, "No transcript available for YouTube video: %s", payload.YouTubeURL)
+			knowledge.ParseStatus = "failed"
+			knowledge.ErrorMessage = "无法获取YouTube视频字幕"
+			knowledge.UpdatedAt = time.Now()
+			s.repo.UpdateKnowledge(ctx, knowledge)
+		}
+		return nil
+	}
+
 	// New pipeline: convert -> store images -> chunk -> vectorize -> multimodal tasks
 	var convertResult *types.ReadResult
 	var chunks []types.ParsedChunk
@@ -3350,4 +3383,153 @@ func (s *knowledgeService) enqueueImageMultimodalTasks(
 			logger.Infof(ctx, "Enqueued image:multimodal task for %s", img.ServingURL)
 		}
 	}
+}
+
+// generateYouTubeWikiArticle generates a well-structured wiki article from a YouTube transcript.
+// It is called after the transcript has been processed as passages. The wiki article is
+// created only if the knowledge base has wiki indexing enabled and a synthesis model configured.
+func (s *knowledgeService) generateYouTubeWikiArticle(
+	ctx context.Context,
+	kb *types.KnowledgeBase,
+	knowledge *types.Knowledge,
+	payload types.DocumentProcessPayload,
+) {
+	// Check if wiki is enabled for this KB
+	if !kb.IsWikiEnabled() {
+		logger.Infof(ctx, "Wiki not enabled for KB %s, skipping YouTube wiki article generation", kb.ID)
+		return
+	}
+	if kb.WikiConfig == nil || kb.WikiConfig.SynthesisModelID == "" {
+		logger.Infof(ctx, "No wiki synthesis model configured for KB %s, skipping YouTube wiki article", kb.ID)
+		return
+	}
+	if len(payload.Passages) == 0 {
+		logger.Warnf(ctx, "No transcript passages available for YouTube wiki article, knowledge: %s", knowledge.ID)
+		return
+	}
+
+	logger.Infof(ctx, "Generating YouTube wiki article for knowledge: %s, KB: %s", knowledge.ID, kb.ID)
+
+	// Get the chat model for synthesis
+	chatModel, err := s.modelService.GetChatModel(ctx, kb.WikiConfig.SynthesisModelID)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to get chat model for YouTube wiki article: %v", err)
+		return
+	}
+
+	// Combine all passages into a single transcript text
+	transcript := strings.Join(payload.Passages, "\n")
+	if len(transcript) > maxContentForWiki {
+		transcript = transcript[:maxContentForWiki]
+	}
+
+	// Extract YouTube metadata from the knowledge record
+	title := knowledge.Title
+	channelName := ""
+	duration := 0
+	if knowledge.Metadata != nil {
+		var meta types.YouTubeMetadata
+		if err := json.Unmarshal(knowledge.Metadata, &meta); err == nil {
+			channelName = meta.ChannelName
+			duration = meta.Duration
+		}
+	}
+
+	// Get language from context
+	lang, _ := types.LanguageFromContext(ctx)
+	if lang == "" {
+		lang = "en"
+	}
+
+	// Call the LLM with the YouTube transcript prompt
+	durationMin := float64(duration) / 60.0
+	promptData := map[string]string{
+		"Transcript": transcript,
+		"Title":      title,
+		"Channel":    channelName,
+		"Duration":   fmt.Sprintf("%.1f", durationMin),
+		"Language":   lang,
+	}
+
+	articleContent, err := s.generateYouTubeWikiContent(ctx, chatModel, promptData)
+	if err != nil {
+		logger.Errorf(ctx, "Failed to generate YouTube wiki article content: %v", err)
+		return
+	}
+
+	if articleContent == "" || articleContent == "No transcript content was available for this video." {
+		logger.Warnf(ctx, "YouTube wiki article generation resulted in empty content for knowledge: %s", knowledge.ID)
+		return
+	}
+
+	// Create slug from video ID
+	videoID := ""
+	if knowledge.Metadata != nil {
+		var meta types.YouTubeMetadata
+		if err := json.Unmarshal(knowledge.Metadata, &meta); err == nil {
+			videoID = meta.VideoID
+		}
+	}
+	slug := fmt.Sprintf("youtube/%s", videoID)
+	if videoID == "" {
+		slug = fmt.Sprintf("youtube/%s", strings.ReplaceAll(strings.ToLower(title), " ", "-"))
+	}
+
+	// Create the wiki page
+	now := time.Now()
+	tenantID := ctx.Value(types.TenantIDContextKey).(uint64)
+	page := &types.WikiPage{
+		ID:              uuid.New().String(),
+		TenantID:        tenantID,
+		KnowledgeBaseID: kb.ID,
+		Slug:            slug,
+		Title:           fmt.Sprintf("Video: %s", title),
+		PageType:        types.WikiPageTypeYouTubeTranscript,
+		Status:          types.WikiPageStatusPublished,
+		Content:         articleContent,
+		Summary:         fmt.Sprintf("YouTube video transcript article: %s", title),
+		SourceRefs:      types.StringArray{fmt.Sprintf("%s|%s", knowledge.ID, title)},
+		CreatedAt:       now,
+		UpdatedAt:       now,
+		Version:         1,
+	}
+
+	if _, err := s.wikiService.CreatePage(ctx, page); err != nil {
+		logger.Errorf(ctx, "Failed to create YouTube wiki article page: %v", err)
+		return
+	}
+
+	logger.Infof(ctx, "Successfully created YouTube wiki article: slug=%s, title=%s", slug, page.Title)
+}
+
+// generateYouTubeWikiContent calls the LLM with the YouTube transcript prompt and returns the article content.
+func (s *knowledgeService) generateYouTubeWikiContent(
+	ctx context.Context,
+	chatModel chat.Chat,
+	data map[string]string,
+) (string, error) {
+	tmpl, err := template.New("youtube_wiki").Parse(agent.WikiYouTubeTranscriptPrompt)
+	if err != nil {
+		return "", fmt.Errorf("parse YouTube wiki template: %w", err)
+	}
+
+	var buf strings.Builder
+	if err := tmpl.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("execute YouTube wiki template: %w", err)
+	}
+
+	prompt := buf.String()
+	thinking := false
+
+	response, err := chatModel.Chat(ctx, []chat.Message{
+		{Role: "user", Content: prompt},
+	}, &chat.ChatOptions{
+		Temperature: 0.3,
+		Thinking:    &thinking,
+	})
+	if err != nil {
+		return "", fmt.Errorf("LLM call for YouTube wiki failed: %w", err)
+	}
+
+	return response.Content, nil
 }

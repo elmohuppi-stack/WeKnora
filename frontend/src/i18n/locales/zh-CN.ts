@@ -154,7 +154,8 @@ export default {
     audiosFilteredNoASR: "已过滤 {count} 个音频文件(未启用ASR)",
     invalidFilesFiltered: "已过滤 {count} 个不支持的文件",
     unsupportedFileType: "不支持的文件格式",
-    unsupportedTypesHint: "部分文档类型（{types}）暂无可用解析引擎，上传后将无法解析",
+    unsupportedTypesHint:
+      "部分文档类型（{types}）暂无可用解析引擎，上传后将无法解析",
     goToParserSettings: "前往配置",
     failedFilesList: "失败文件列表：",
     andMoreFiles: "...及其他 {count} 个文件",
@@ -175,6 +176,20 @@ export default {
     urlLabel: "URL地址",
     urlPlaceholder: "请输入网页URL，例如：https://example.com",
     urlTip: "支持导入各类网页内容，系统会自动提取和解析网页中的文本内容",
+    importYouTube: "导入YouTube视频",
+    importYouTubeTitle: "从YouTube导入",
+    youtubeUrlRequired: "请输入YouTube视频链接",
+    invalidYouTubeUrl:
+      "请输入有效的YouTube链接（例如：https://www.youtube.com/watch?v=...）",
+    youtubeImportSuccess: "YouTube视频导入成功！",
+    youtubeImportFailed: "YouTube视频导入失败！",
+    youtubeUrlExists: "该YouTube视频已存在",
+    youtubeUrlLabel: "YouTube链接",
+    youtubeUrlPlaceholder:
+      "请输入YouTube视频链接，例如：https://www.youtube.com/watch?v=...",
+    youtubeUrlTip:
+      "系统将自动获取视频字幕和元数据。支持YouTube、YouTube Shorts和youtu.be短链接。",
+    typeYouTube: "YouTube",
     typeURL: "网页",
     typeManual: "手动创建",
     typeFile: "文件",
@@ -184,6 +199,7 @@ export default {
     channelBrowserExtension: "浏览器插件",
     channelWechat: "微信",
     channelWecom: "企业微信",
+    channelYouTube: "YouTube",
     channelFeishu: "飞书",
     channelDingtalk: "钉钉",
     channelSlack: "Slack",
@@ -216,7 +232,8 @@ export default {
     childChunk: "子块",
     viewParentContext: "查看父块上下文",
     parentContextLoadFailed: "加载父上下文失败",
-    confirmDeleteQuestion: "确定要删除这个问题吗？删除后将同时移除对应的向量索引。",
+    confirmDeleteQuestion:
+      "确定要删除这个问题吗？删除后将同时移除对应的向量索引。",
     legacyQuestionCannotDelete: "旧格式问题无法删除，请重新生成问题",
     docActionUnsupported: "当前知识库类型不支持该操作",
     notInitialized:
@@ -265,12 +282,14 @@ export default {
     newSession: "新会话",
     editDocument: "编辑文档",
     rebuildDocument: "重建知识",
-    rebuildConfirm: '确认重建文档"{fileName}"？该操作会清理现有分块并重新解析。',
+    rebuildConfirm:
+      '确认重建文档"{fileName}"？该操作会清理现有分块并重新解析。',
     rebuildSubmitted: "重建任务已提交",
     rebuildFailed: "重建失败，请稍后再试",
     rebuildInProgress: "当前文档正在解析中，请稍后重试",
     cancelParse: "停止解析",
-    cancelParseConfirmBody: '确认停止解析"{title}"？已写入的分块会保留，可稍后通过"重建"重新触发；优化阶段（摘要 / 问答 / 知识图谱）的待执行任务会被立即丢弃。',
+    cancelParseConfirmBody:
+      '确认停止解析"{title}"？已写入的分块会保留，可稍后通过"重建"重新触发；优化阶段（摘要 / 问答 / 知识图谱）的待执行任务会被立即丢弃。',
     cancelParseSubmitted: "已停止解析",
     cancelParseFailed: "停止失败，请稍后再试",
     draft: "草稿",
@@ -283,7 +302,8 @@ export default {
     moveNoTargets: "没有兼容的目标知识库（需要相同类型和 Embedding 模型）",
     moveMode: "移动模式",
     moveModeReuseVectors: "复用向量（快速）",
-    moveModeReuseVectorsDesc: "直接移动分块和向量索引，适用于分片配置相同的情况",
+    moveModeReuseVectorsDesc:
+      "直接移动分块和向量索引，适用于分片配置相同的情况",
     moveModeReparse: "重新解析",
     moveModeReparseDesc: "使用目标知识库的分片配置重新解析文档",
     moveConfirm: "确认移动",
@@ -317,7 +337,8 @@ export default {
     clearSelection: "取消选择",
     batchDelete: "批量删除",
     batchDeleteConfirmation: "批量删除确认",
-    confirmBatchDeleteDocument: "确认删除选中的 {count} 个文档？删除后将无法恢复。",
+    confirmBatchDeleteDocument:
+      "确认删除选中的 {count} 个文档？删除后将无法恢复。",
     batchDeleteSuccess: "成功删除 {count} 个文档",
     batchDeleteFailed: "批量删除失败",
     statusCompleted: "已完成",
@@ -457,8 +478,10 @@ export default {
       output: "输出",
       metadata: "元数据",
       traceMetadata: "Trace 级元数据",
-      metadataHint: "记录与 Langfuse 等可观测性系统关联的辅助字段（如 trace ID）。各阶段的业务入参/出参在「输入」「输出」标签中查看。",
-      metadataEmpty: "当前 span 没有元数据。阶段与子任务的入参/出参请查看「输入」「输出」；若已接入 Langfuse，trace 级字段会显示在「概览」。",
+      metadataHint:
+        "记录与 Langfuse 等可观测性系统关联的辅助字段（如 trace ID）。各阶段的业务入参/出参在「输入」「输出」标签中查看。",
+      metadataEmpty:
+        "当前 span 没有元数据。阶段与子任务的入参/出参请查看「输入」「输出」；若已接入 Langfuse，trace 级字段会显示在「概览」。",
       error: "错误",
       empty: "暂无数据",
       inProgress: "进行中",
@@ -486,7 +509,8 @@ export default {
     },
     errorCode: {
       DOCREADER_TIMEOUT: "文档解析超时",
-      DOCREADER_TIMEOUT_SUGGESTION: "文件可能过大或解析服务繁忙，请稍后重试或拆分文档。",
+      DOCREADER_TIMEOUT_SUGGESTION:
+        "文件可能过大或解析服务繁忙，请稍后重试或拆分文档。",
       DOCREADER_UNAVAILABLE: "文档解析服务不可用",
       DOCREADER_UNAVAILABLE_SUGGESTION: "解析服务离线，请联系管理员。",
       DOCREADER_PARSE_FAILED: "文档解析失败",
@@ -496,9 +520,11 @@ export default {
       EMBEDDING_RATE_LIMIT: "向量服务被限流",
       EMBEDDING_RATE_LIMIT_SUGGESTION: "向量服务触发限流，请稍后重试。",
       EMBEDDING_PROVIDER_FAIL: "向量服务错误",
-      EMBEDDING_PROVIDER_FAIL_SUGGESTION: "向量服务返回错误，请检查供应商配置。",
+      EMBEDDING_PROVIDER_FAIL_SUGGESTION:
+        "向量服务返回错误，请检查供应商配置。",
       VECTORSTORE_WRITE_FAILED: "向量库写入失败",
-      VECTORSTORE_WRITE_FAILED_SUGGESTION: "向量库拒绝写入，请检查向量库可用性。",
+      VECTORSTORE_WRITE_FAILED_SUGGESTION:
+        "向量库拒绝写入，请检查向量库可用性。",
       MULTIMODAL_VLM_FAILED: "图像理解失败",
       MULTIMODAL_VLM_FAILED_SUGGESTION: "部分图像无法处理，文档可能仍可使用。",
       MULTIMODAL_ALL_FAILED: "全部图像多模态处理失败",
@@ -659,10 +685,12 @@ export default {
     conversationStrategy: "对话策略",
     webSearchConfig: "网络搜索",
     enableMemory: "开启记忆功能",
-    enableMemoryDesc: "开启后，系统将记录您的对话历史，并在后续对话中自动回忆相关内容，提供更个性化的回答。",
-    autoCheckUpdate: '自动下载更新',
-    autoCheckUpdateDesc: '开启后自动检查并在后台下载最新版本安装包。',
-    memoryRequiresNeo4j: "记忆功能依赖 Neo4j 图数据库，请先配置并启用 Neo4j（设置环境变量 NEO4J_ENABLE=true）后再开启此功能。",
+    enableMemoryDesc:
+      "开启后，系统将记录您的对话历史，并在后续对话中自动回忆相关内容，提供更个性化的回答。",
+    autoCheckUpdate: "自动下载更新",
+    autoCheckUpdateDesc: "开启后自动检查并在后台下载最新版本安装包。",
+    memoryRequiresNeo4j:
+      "记忆功能依赖 Neo4j 图数据库，请先配置并启用 Neo4j（设置环境变量 NEO4J_ENABLE=true）后再开启此功能。",
     memoryHowToEnable: "查看 Neo4j 配置指南",
     vectorStoreEngine: "向量数据库引擎",
     parserEngine: "解析引擎",
@@ -681,14 +709,17 @@ export default {
     roleDenied: {
       title: "权限不足",
       desc: "你当前的角色无权访问此设置项。请联系本空间的管理员获取所需角色。",
-    },    weknoraCloud: {
+    },
+    weknoraCloud: {
       title: "WeKnora Cloud",
-      description: "配置 WeKnora Cloud 的 APPID 和 APPSECRET 凭证。凭证用于模型服务和文档解析引擎。",
+      description:
+        "配置 WeKnora Cloud 的 APPID 和 APPSECRET 凭证。凭证用于模型服务和文档解析引擎。",
       viewDocs: "查看文档",
       unconfigured: "尚未配置凭证，请填写 APPID 和 APPSECRET",
       configured: "凭证已配置，状态正常",
       expired: "WeKnora Cloud 凭证已失效",
-      expiredDefault: "服务重启后加密密钥已变更，已保存的凭证无法解密。请重新填写凭证。",
+      expiredDefault:
+        "服务重启后加密密钥已变更，已保存的凭证无法解密。请重新填写凭证。",
       reconfigure: "重新配置",
       appIdLabel: "APPID",
       appIdDesc: "WeKnora Cloud 的应用 ID",
@@ -699,13 +730,15 @@ export default {
       saveHint: "保存后将验证服务可达性并加密存储凭证",
       saveBtn: "保存凭证",
       usageTitle: "使用说明",
-      usageSteps: "1. 在此页面填写并保存 APPID 和 APPSECRET\n2. 模型服务：前往「模型管理」添加模型，选择 Remote API 来源，厂商选择「WeKnoraCloud」\n3. 文档解析：前往「知识库设置 → 解析引擎」，为对应文件类型选择「WeKnora Cloud」引擎",
+      usageSteps:
+        "1. 在此页面填写并保存 APPID 和 APPSECRET\n2. 模型服务：前往「模型管理」添加模型，选择 Remote API 来源，厂商选择「WeKnoraCloud」\n3. 文档解析：前往「知识库设置 → 解析引擎」，为对应文件类型选择「WeKnora Cloud」引擎",
       fillRequired: "请填写 APPID 和 APPSECRET",
       saveSuccess: "凭证保存成功",
       saveFailed: "凭证保存失败",
       credentialConfigured: "WeKnoraCloud 凭证已配置",
       credentialExpired: "凭证已失效，请重新配置。",
-      credentialUnconfigured: "尚未配置 WeKnoraCloud 凭证，请先填写 APPID 和 APPSECRET。",
+      credentialUnconfigured:
+        "尚未配置 WeKnoraCloud 凭证，请先填写 APPID 和 APPSECRET。",
       checkingStatus: "正在检查凭证状态...",
       goToSettings: "前往设置中配置",
       modelHintConfigured: "WeKnoraCloud 凭证已配置。支持的模型可参考",
@@ -750,7 +783,8 @@ export default {
     enterNameRequired: "请输入名称",
     parser: {
       title: "解析引擎",
-      description: "文档解析引擎状态及配置。此处设置优先于服务端环境变量，留空则使用环境变量默认值。",
+      description:
+        "文档解析引擎状态及配置。此处设置优先于服务端环境变量，留空则使用环境变量默认值。",
       loading: "加载中...",
       retry: "重试",
       noEngineDetected: "未检测到解析引擎，请确认 DocReader 服务正常运行。",
@@ -760,7 +794,8 @@ export default {
       unavailable: "不可用",
       builtinDesc: "DocReader 内置解析引擎（docx/pdf/xlsx 等复杂格式）",
       currentAddr: "当前",
-      envVarHint: "修改请设置环境变量 DOCREADER_ADDR、DOCREADER_TRANSPORT（grpc/http），重启服务生效。",
+      envVarHint:
+        "修改请设置环境变量 DOCREADER_ADDR、DOCREADER_TRANSPORT（grpc/http），重启服务生效。",
       selfHostedEndpoint: "自建端点",
       formulaRecognition: "公式识别",
       tableRecognition: "表格识别",
@@ -769,7 +804,8 @@ export default {
       saveConfig: "保存配置",
       docs: "文档",
       loadFailed: "加载解析引擎列表失败",
-      ensureDocreaderConnected: "请先确保 DocReader 服务已通过环境变量配置并已连接",
+      ensureDocreaderConnected:
+        "请先确保 DocReader 服务已通过环境变量配置并已连接",
       checkDoneStatusUpdated: "已使用当前填写参数检测，上方状态已更新",
       checkSuccess: "测试连接成功",
       checkFailed: "检测失败",
@@ -783,11 +819,13 @@ export default {
       mineruHtmlLabel: "MinerU-HTML（HTML 解析）",
       serverUrl: "服务器地址",
       vlmServerUrlPlaceholder: "如 http://your-vllm-server:8000",
-      vlmServerUrlHint: "当 Backend 选择 vlm-http-client 或 hybrid-http-client 时需要填写",
+      vlmServerUrlHint:
+        "当 Backend 选择 vlm-http-client 或 hybrid-http-client 时需要填写",
     },
     storage: {
       title: "存储引擎",
-      description: "配置文档与图片的存储方式。此处设置各引擎参数，知识库中仅选择使用哪个引擎。",
+      description:
+        "配置文档与图片的存储方式。此处设置各引擎参数，知识库中仅选择使用哪个引擎。",
       loading: "加载中...",
       retry: "重试",
       defaultEngine: "默认引擎",
@@ -813,8 +851,10 @@ export default {
       minioRemote: "远程 MinIO",
       detected: "已检测",
       notDetected: "未检测到",
-      minioDockerDetected: "已检测到 Docker 部署的 MinIO 环境变量，连接信息由环境变量提供，无需手动填写。",
-      minioDockerNotDetected: "未检测到 MinIO 环境变量（MINIO_ENDPOINT 等），请确认 Docker Compose 配置正确。",
+      minioDockerDetected:
+        "已检测到 Docker 部署的 MinIO 环境变量，连接信息由环境变量提供，无需手动填写。",
+      minioDockerNotDetected:
+        "未检测到 MinIO 环境变量（MINIO_ENDPOINT 等），请确认 Docker Compose 配置正确。",
       minioRemoteHint: "连接到远程 MinIO 服务，需要手动填写连接信息。",
       cosTitle: "腾讯云 COS",
       cosDesc: "腾讯云对象存储服务，适合公有云部署，支持 CDN 加速。",
@@ -887,20 +927,24 @@ export default {
     viewDocs: "查看文档获取密钥",
     apiKeyUnchanged: "留空保持当前密钥不变",
     noDescription: "暂无描述",
-    noProvidersDesc: "添加一个网络搜索引擎，为您的智能体提供实时的互联网信息检索能力。",
+    noProvidersDesc:
+      "添加一个网络搜索引擎，为您的智能体提供实时的互联网信息检索能力。",
     basicInfo: "基础信息",
     credentials: "凭证信息",
     setAsDefaultDesc: "当智能体没有指定特定的搜索引擎时，将默认使用此配置",
     // Search behavior
     searchBehaviorTitle: "搜索行为配置",
     defaultProviderLabel: "默认搜索引擎",
-    defaultProviderDescription: "为未指定搜索引擎的智能体选择默认使用的搜索引擎",
+    defaultProviderDescription:
+      "为未指定搜索引擎的智能体选择默认使用的搜索引擎",
     providerLabel: "搜索引擎提供商",
     providerDescription: "选择用于网络搜索的搜索引擎服务",
     providerPlaceholder: "选择搜索引擎...",
     proxyUrlLabel: "HTTP 代理",
-    proxyUrlPlaceholder: "例如 http://proxy.example.com:3128（可选，仅支持 http/https）",
-    proxyUrlHelp: "若环境访问搜索 API 需代理，在此填写；留空则使用系统环境变量 HTTP(S)_PROXY。",
+    proxyUrlPlaceholder:
+      "例如 http://proxy.example.com:3128（可选，仅支持 http/https）",
+    proxyUrlHelp:
+      "若环境访问搜索 API 需代理，在此填写；留空则使用系统环境变量 HTTP(S)_PROXY。",
     apiKeyLabel: "API 密钥",
     baseUrlLabel: "实例地址",
     baseUrlPlaceholder: "https://searxng.example.com",
@@ -975,13 +1019,16 @@ export default {
     envTag: "DEFAULT",
     testConnection: "测试连接",
     testing: "测试中...",
-    immutableNotice: "创建后无法更改引擎类型、连接和索引设置。\n如需更改，请删除后重新创建。",
-    insecureSkipVerifyWarning: "关闭 TLS 证书校验会使连接面临中间人攻击风险。仅可用于自签名证书的开发集群，切勿在生产环境使用。",
+    immutableNotice:
+      "创建后无法更改引擎类型、连接和索引设置。\n如需更改，请删除后重新创建。",
+    insecureSkipVerifyWarning:
+      "关闭 TLS 证书校验会使连接面临中间人攻击风险。仅可用于自签名证书的开发集群，切勿在生产环境使用。",
     validation: {
       nameRequired: "名称为必填项",
       engineTypeRequired: "引擎类型为必填项",
       fieldRequired: "{field}为必填项",
-      indexNamePattern: "必须以字母开头，仅允许字母、数字、下划线和连字符（最多128个字符）",
+      indexNamePattern:
+        "必须以字母开头，仅允许字母、数字、下划线和连字符（最多128个字符）",
     },
     toasts: {
       storeCreated: "向量数据库已创建",
@@ -1000,11 +1047,13 @@ export default {
     enableDescription: "开启后，新的对话消息将自动索引到知识库，支持向量搜索",
     embeddingModelLabel: "Embedding 模型",
     embeddingModelDescription: "选择用于消息向量化的 Embedding 模型",
-    embeddingModelLocked: "已有消息被索引，Embedding 模型不可修改（修改需清空索引数据）",
+    embeddingModelLocked:
+      "已有消息被索引，Embedding 模型不可修改（修改需清空索引数据）",
     statsTitle: "索引统计",
     statsIndexedMessages: "已索引消息",
     statsNotConfigured: "消息索引未配置",
-    statsNotConfiguredDesc: "启用并选择 Embedding 模型后，对话消息将自动向量化索引",
+    statsNotConfiguredDesc:
+      "启用并选择 Embedding 模型后，对话消息将自动向量化索引",
     toasts: {
       saveSuccess: "消息管理配置已保存",
       saveFailed: "保存配置失败: {message}",
@@ -1026,7 +1075,8 @@ export default {
     rerankThresholdDescription: "重排序的最低分数阈值（-10 到 10）",
     rerankModelLabel: "Rerank 模型",
     rerankModelDescription: "选择用于搜索结果重排序的模型",
-    rerankModelRequired: "请选择 Rerank 模型，搜索功能需要此模型对结果进行重排序",
+    rerankModelRequired:
+      "请选择 Rerank 模型，搜索功能需要此模型对结果进行重排序",
     toasts: {
       saveSuccess: "检索配置已保存",
       saveFailed: "保存配置失败: {message}",
@@ -1034,7 +1084,8 @@ export default {
   },
   graphSettings: {
     title: "知识图谱配置",
-    description: "配置实体-关系提取功能，自动从文本中抽取实体和关系构建知识图谱（注意：这与 Wiki 知识库中的「页面链接图谱」是两回事——前者是基于 LLM 的实体-关系图，后者是 Wiki 页面之间的引用关系图）",
+    description:
+      "配置实体-关系提取功能，自动从文本中抽取实体和关系构建知识图谱（注意：这与 Wiki 知识库中的「页面链接图谱」是两回事——前者是基于 LLM 的实体-关系图，后者是 Wiki 页面之间的引用关系图）",
     enableLabel: "启用实体关系提取",
     enableDescription: "开启后将自动从文本中提取实体和关系",
     tagsLabel: "关系类型",
@@ -1412,8 +1463,8 @@ export default {
     chromeExtension: "Chrome 插件",
     clawhubSkill: "Claw Skill",
     newBadge: "New",
-    github: 'GitHub',
-    githubStarTip: '在 GitHub 打开仓库，若觉得有用欢迎点个 Star',
+    github: "GitHub",
+    githubStarTip: "在 GitHub 打开仓库，若觉得有用欢迎点个 Star",
     on: "开启",
     off: "关闭",
     resetToDefault: "恢复默认",
@@ -1438,7 +1489,8 @@ export default {
     belongsToKb: "所属知识库：",
     belongsToOrg: "所属空间：",
     readOnlyFromAgent: "仅在此对话中只读，不显示在知识库列表中",
-    noCompatibleKbForAgent: "当前智能体的工具与作用域内知识库的能力不匹配，暂无可引用的知识库。",
+    noCompatibleKbForAgent:
+      "当前智能体的工具与作用域内知识库的能力不匹配，暂无可引用的知识库。",
   },
   agent: {
     taskLabel: "任务:",
@@ -1450,7 +1502,8 @@ export default {
     argumentsLabel: "参数",
     toolFallback: "工具",
     stepsCompleted: "已完成 <strong>{steps}</strong> 个步骤",
-    stepsCompletedWithDuration: "已完成 <strong>{steps}</strong> 个步骤，耗时 <strong>{duration}</strong>",
+    stepsCompletedWithDuration:
+      "已完成 <strong>{steps}</strong> 个步骤，耗时 <strong>{duration}</strong>",
     title: "智能体",
     subtitle: "配置和管理您的智能体，自定义对话行为和能力",
     createAgent: "创建智能体",
@@ -1585,11 +1638,14 @@ export default {
       systemPromptRequired: "请输入系统提示词",
       modelRequired: "请选择模型",
       rerankModelRequired: "使用知识库时请选择 ReRank 模型",
-      contextsMissing: "开启知识库时，上下文模板必须包含 {'{{'}contexts{'}}'} 占位符",
+      contextsMissing:
+        "开启知识库时，上下文模板必须包含 {'{{'}contexts{'}}'} 占位符",
       queryMissingInContext: "上下文模板必须包含 {'{{'}query{'}}'} 占位符",
-      knowledgeBasesMissing: "建议在系统提示词中包含 {'{{'}knowledge_bases{'}}'} 占位符，以便模型了解可用的知识库",
+      knowledgeBasesMissing:
+        "建议在系统提示词中包含 {'{{'}knowledge_bases{'}}'} 占位符，以便模型了解可用的知识库",
       queryMissingInRewrite: "改写用户提示词必须包含 {'{{'}query{'}}'} 占位符",
-      conversationMissing: "改写用户提示词必须包含 {'{{'}conversation{'}}'} 占位符",
+      conversationMissing:
+        "改写用户提示词必须包含 {'{{'}conversation{'}}'} 占位符",
       queryMissingInFallback: "兜底提示词必须包含 {'{{'}query{'}}'} 占位符",
       avatar: "图标",
       avatarPlaceholder: "输入 Emoji 或点击选择",
@@ -1601,7 +1657,8 @@ export default {
       model: "模型",
       modelPlaceholder: "请选择模型",
       systemPrompt: "系统提示词",
-      systemPromptPlaceholder: "自定义系统提示词，定义智能体的行为和角色（使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为）",
+      systemPromptPlaceholder:
+        "自定义系统提示词，定义智能体的行为和角色（使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为）",
       defaultPromptHint: "留空将使用以下系统默认提示词：",
       defaultContextTemplateHint: "留空将使用以下系统默认上下文模板：",
       contextTemplateRequired: "请输入上下文模板",
@@ -1631,12 +1688,14 @@ export default {
       myKnowledgeBases: "我的知识库",
       sharedKnowledgeBases: "协作知识库",
       retrieveKBOnlyWhenMentioned: "仅在 {'@'} 提及时检索",
-      retrieveKBOnlyWhenMentionedDesc: "关闭：自动检索已配置的知识库，开启：仅当用户 {'@'} 提及时才检索",
+      retrieveKBOnlyWhenMentionedDesc:
+        "关闭：自动检索已配置的知识库，开启：仅当用户 {'@'} 提及时才检索",
       retrievalSectionTitle: "检索策略",
       rerankModel: "ReRank 模型",
       rerankModelDesc: "用于对知识库检索结果进行重排序，提高回答准确性",
       rerankModelPlaceholder: "请选择 ReRank 模型",
-      rerankModelOptionalHint: "当前作用域内暂无 RAG 类型知识库，可不填；后续若加入 RAG 知识库，将自动使用租户默认重排模型，仍建议显式配置。",
+      rerankModelOptionalHint:
+        "当前作用域内暂无 RAG 类型知识库，可不填；后续若加入 RAG 知识库，将自动使用租户默认重排模型，仍建议显式配置。",
       maxIterations: "最大迭代次数",
       allowedTools: "允许的工具",
       multiTurn: "多轮对话",
@@ -1675,7 +1734,8 @@ export default {
       fallbackPromptPlaceholder: "留空使用系统默认提示词",
       // Skills 配置
       skillsConfig: "技能 Skills",
-      skillsConfigDesc: "配置 Agent 可以使用的预装 Skills，提供专业领域知识和工作流程",
+      skillsConfigDesc:
+        "配置 Agent 可以使用的预装 Skills，提供专业领域知识和工作流程",
       skillsSelection: "Skills 选择",
       skillsSelectionDesc: "选择 Agent 可以使用的 Skills 范围",
       skillsAll: "全部",
@@ -1685,7 +1745,8 @@ export default {
       selectSkillsDesc: "选择要启用的 Skills",
       noSkillsAvailable: "暂无预装 Skills",
       skillsInfoTitle: "什么是 Skills？",
-      skillsInfoContent: "Skills 是预装的专业知识模块，可以为 Agent 提供特定领域的指令、工作流程和工具支持。启用 Skills 后，Agent 会在需要时自动加载相关知识。",
+      skillsInfoContent:
+        "Skills 是预装的专业知识模块，可以为 Agent 提供特定领域的指令、工作流程和工具支持。启用 Skills 后，Agent 会在需要时自动加载相关知识。",
     },
     selector: {
       title: "选择智能体",
@@ -1708,19 +1769,23 @@ export default {
       },
       deepResearcher: {
         name: "深度研究员",
-        description: "专注于深度研究和综合分析，能够制定研究计划、多维度检索信息、深入思考并给出全面的分析报告",
+        description:
+          "专注于深度研究和综合分析，能够制定研究计划、多维度检索信息、深入思考并给出全面的分析报告",
       },
       dataAnalyst: {
         name: "数据分析师",
-        description: "专注于数据库查询和数据分析，能够理解业务需求、构建SQL查询、分析数据并提供洞察",
+        description:
+          "专注于数据库查询和数据分析，能够理解业务需求、构建SQL查询、分析数据并提供洞察",
       },
       knowledgeGraphExpert: {
         name: "知识图谱专家",
-        description: "专注于知识图谱查询和关系分析，能够探索实体关系、发现隐藏联系并构建知识网络",
+        description:
+          "专注于知识图谱查询和关系分析，能够探索实体关系、发现隐藏联系并构建知识网络",
       },
       documentAssistant: {
         name: "文档助手",
-        description: "专注于文档检索和内容整理，能够快速定位文档、提取关键信息并生成摘要",
+        description:
+          "专注于文档检索和内容整理，能够快速定位文档、提取关键信息并生成摘要",
       },
     },
   },
@@ -1808,7 +1873,8 @@ export default {
     create: {
       action: "创建新空间",
       dialogTitle: "创建新空间",
-      dialogSubtitle: "空间拥有独立的知识库与成员，你将自动成为新空间的所有者。",
+      dialogSubtitle:
+        "空间拥有独立的知识库与成员，你将自动成为新空间的所有者。",
       nameLabel: "空间名称",
       namePlaceholder: "例如：我的新项目",
       nameRequired: "请输入空间名称",
@@ -1874,7 +1940,8 @@ export default {
       copyTitle: "复制 API Key",
       resetTitle: "重置 API Key",
       resetConfirmTitle: "确认重置 API Key？",
-      resetConfirmBody: "重置后，旧的 API Key 会立即失效，所有使用旧 Key 的应用、SDK 与脚本必须更换为新 Key 才能继续访问。此操作不可撤销。",
+      resetConfirmBody:
+        "重置后，旧的 API Key 会立即失效，所有使用旧 Key 的应用、SDK 与脚本必须更换为新 Key 才能继续访问。此操作不可撤销。",
       resetConfirmOk: "确认重置",
       resetConfirmCancel: "取消",
       resetSuccess: "API Key 已重置，新 Key 已显示在输入框中",
@@ -1933,7 +2000,8 @@ export default {
     dbVersionDescription: "当前数据库迁移版本号",
     dbMigrationFailedTag: "迁移失败",
     dbMigrationFailedTitle: "数据库迁移失败",
-    dbMigrationFailedDesc: "启动时数据库迁移未成功完成，部分表或索引可能未创建，会导致 Wiki、知识图谱等功能异常。建议先查看排查文档自助修复；如仍无法解决，请通过下方链接反馈。",
+    dbMigrationFailedDesc:
+      "启动时数据库迁移未成功完成，部分表或索引可能未创建，会导致 Wiki、知识图谱等功能异常。建议先查看排查文档自助修复；如仍无法解决，请通过下方链接反馈。",
     dbMigrationViewDocs: "查看排查文档",
     dbMigrationReportIssue: "无法修复？提交 Issue",
     keywordIndexEngineLabel: "关键词索引引擎",
@@ -1949,20 +2017,26 @@ export default {
     },
     globalSettings: {
       title: "系统设置",
-      description: "平台级运行时配置，保存后立即对所有租户生效。仅系统管理员可见可改。",
+      description:
+        "平台级运行时配置，保存后立即对所有租户生效。仅系统管理员可见可改。",
       loading: "加载中...",
       empty: "暂无可配置的系统设置",
       badgeRequiresRestart: "需重启",
       badgeSecret: "敏感",
       badgeOverride: "已覆盖",
-      badgeOverrideTooltip: "该值已由管理员保存到数据库，覆盖了环境变量与默认值",
+      badgeOverrideTooltip:
+        "该值已由管理员保存到数据库，覆盖了环境变量与默认值",
       modifiedAt: "上次修改：{value}",
-      tagInputPlaceholder: "回车添加条目，例：example.com / *.foo.com / 10.0.0.0/8",
+      tagInputPlaceholder:
+        "回车添加条目，例：example.com / *.foo.com / 10.0.0.0/8",
       priorityHint: {
         title: "关于优先级",
-        tier1: "在此页面保存过的项（带「已覆盖」徽章）— 始终以这里的值为准，环境变量会被忽略。",
-        tier2: "未在此处保存过的项 — 如果环境变量里有就用环境变量，否则用程序内置默认值。",
-        tier3: "若想让某项重新由环境变量控制，点击该行的「重置」按钮即可清除当前 UI 设置。",
+        tier1:
+          "在此页面保存过的项（带「已覆盖」徽章）— 始终以这里的值为准，环境变量会被忽略。",
+        tier2:
+          "未在此处保存过的项 — 如果环境变量里有就用环境变量，否则用程序内置默认值。",
+        tier3:
+          "若想让某项重新由环境变量控制，点击该行的「重置」按钮即可清除当前 UI 设置。",
       },
       keyLabels: {
         auth: {
@@ -1990,7 +2064,8 @@ export default {
         cancelBtn: "取消",
         emptyValue: "（空）",
         defaultBody: "即将把「{label}」改为：{value}",
-        bodyAuthRegistrationMode: "即将把「{label}」改为：{value}\n\n如果切到 self_serve，公网任何人都可以注册账号 — 务必确认是预期行为。",
+        bodyAuthRegistrationMode:
+          "即将把「{label}」改为：{value}\n\n如果切到 self_serve，公网任何人都可以注册账号 — 务必确认是预期行为。",
       },
       listConfirm: {
         ssrf: {
@@ -2017,13 +2092,15 @@ export default {
         label: "重置",
         tooltip: "清除当前 UI 覆盖，恢复使用环境变量或内置默认值",
         confirmBtn: "确认重置",
-        confirmBody: "确定要重置「{label}」吗？该操作会删除数据库中的覆盖值，回退到环境变量或内置默认值。",
+        confirmBody:
+          "确定要重置「{label}」吗？该操作会删除数据库中的覆盖值，回退到环境变量或内置默认值。",
         success: "已重置为默认值",
         failed: "重置失败",
       },
       admins: {
         label: "系统管理员",
-        description: "拥有平台级权限的用户。在右侧输入邮箱并回车即可提升用户为管理员；点击 × 即为撤销其权限。当前你（自己）已是管理员，不在列表中显示，也无法被自己撤销。",
+        description:
+          "拥有平台级权限的用户。在右侧输入邮箱并回车即可提升用户为管理员；点击 × 即为撤销其权限。当前你（自己）已是管理员，不在列表中显示，也无法被自己撤销。",
         placeholder: "输入用户邮箱并回车",
         loadFailed: "加载系统管理员失败",
         saveSuccess: "已更新系统管理员",
@@ -2043,9 +2120,11 @@ export default {
       },
       bulkApply: {
         label: "应用到所有现有租户",
-        tooltip: "保存的值默认只对之后新建的租户生效；点击此按钮将当前值同步写入所有现有租户。",
+        tooltip:
+          "保存的值默认只对之后新建的租户生效；点击此按钮将当前值同步写入所有现有租户。",
         confirmBtn: "确认应用",
-        confirmBody: "将把所有现有租户的存储配额覆盖为 {value} GB。如有租户被运维单独调整过的配额，也会一并被覆盖。是否继续？",
+        confirmBody:
+          "将把所有现有租户的存储配额覆盖为 {value} GB。如有租户被运维单独调整过的配额，也会一并被覆盖。是否继续？",
         success: "已将 {count} 个租户的存储配额更新为 {gb} GB",
         failed: "应用到所有租户失败",
       },
@@ -2112,7 +2191,8 @@ export default {
       schemaLabel: "参数结构",
       emptyDescription: "该服务未提供工具或资源",
       requireApproval: "需人工审核",
-      requireApprovalTip: "开启后，Agent 调用该工具前会暂停并等待确认，适用于可能改库/删文件等高危操作",
+      requireApprovalTip:
+        "开启后，Agent 调用该工具前会暂停并等待确认，适用于可能改库/删文件等高危操作",
       approvalSaveFailed: "保存审核设置失败",
     },
   },
@@ -2217,7 +2297,8 @@ export default {
       apiKeyOptional: "API Key（可选）",
       apiKeyPlaceholder: "输入 API Key",
       customHeadersLabel: "自定义请求头（可选）",
-      customHeadersDesc: "调用远程模型 API 时附加的 HTTP 请求头，常用于企业网关鉴权、链路追踪等场景；Authorization、Content-Type 等保留头会被自动忽略。",
+      customHeadersDesc:
+        "调用远程模型 API 时附加的 HTTP 请求头，常用于企业网关鉴权、链路追踪等场景；Authorization、Content-Type 等保留头会被自动忽略。",
       customHeadersAdd: "添加请求头",
       customHeadersKeyPlaceholder: "Header 名称",
       customHeadersValuePlaceholder: "Header 值",
@@ -2272,12 +2353,13 @@ export default {
           description: "Claude models via native Anthropic Messages API",
         },
         azure_openai: {
-          label: 'Azure OpenAI',
-          description: 'Microsoft Azure 上的 OpenAI 服务',
+          label: "Azure OpenAI",
+          description: "Microsoft Azure 上的 OpenAI 服务",
         },
         aliyun: {
           label: "阿里云 DashScope",
-          description: "qwen-plus, tongyi-embedding-vision-plus, qwen3-rerank, etc.",
+          description:
+            "qwen-plus, tongyi-embedding-vision-plus, qwen3-rerank, etc.",
         },
         zhipu: {
           label: "智谱 BigModel",
@@ -2285,7 +2367,8 @@ export default {
         },
         openrouter: {
           label: "OpenRouter",
-          description: "openai/gpt-5.2-chat, google/gemini-3-flash-preview, etc.",
+          description:
+            "openai/gpt-5.2-chat, google/gemini-3-flash-preview, etc.",
         },
         generic: {
           label: "自定义 (OpenAI兼容接口)",
@@ -2301,7 +2384,8 @@ export default {
         },
         volcengine: {
           label: "火山引擎 Volcengine",
-          description: "doubao-1-5-pro-32k-250115, doubao-embedding-vision-250615, etc.",
+          description:
+            "doubao-1-5-pro-32k-250115, doubao-embedding-vision-250615, etc.",
         },
         deepseek: {
           label: "DeepSeek",
@@ -2337,11 +2421,13 @@ export default {
         },
         moonshot: {
           label: "月之暗面 Moonshot",
-          description: "kimi-k2-turbo-preview, moonshot-v1-8k-vision-preview, etc.",
+          description:
+            "kimi-k2-turbo-preview, moonshot-v1-8k-vision-preview, etc.",
         },
         qianfan: {
           label: "百度千帆 Baidu Cloud",
-          description: "ernie-5.0-thinking-preview, embedding-v1, bce-reranker-base, etc.",
+          description:
+            "ernie-5.0-thinking-preview, embedding-v1, bce-reranker-base, etc.",
         },
         longcat: {
           label: "LongCat AI",
@@ -2352,12 +2438,14 @@ export default {
           description: "DeepSeek-R1, DeepSeek-V3 系列模型，支持思维链",
         },
         nvidia: {
-            label: "NVIDIA",
-            description: "deepseek-ai-deepseek-v3_1, nv-embed-v1, rerank-qa-mistral-4b, etc.",
+          label: "NVIDIA",
+          description:
+            "deepseek-ai-deepseek-v3_1, nv-embed-v1, rerank-qa-mistral-4b, etc.",
         },
         novita: {
-            label: "Novita AI",
-            description: "moonshotai/kimi-k2.5, zai-org/glm-5, minimax/minimax-m2.7, qwen/qwen3-embedding-0.6b 等",
+          label: "Novita AI",
+          description:
+            "moonshotai/kimi-k2.5, zai-org/glm-5, minimax/minimax-m2.7, qwen/qwen3-embedding-0.6b 等",
         },
       },
     },
@@ -2392,7 +2480,8 @@ export default {
     uiFont: "界面字体",
     uiFontDescription: "用于菜单、正文、按钮等界面大部分文字的字体",
     monoFont: "代码字体",
-    monoFontDescription: "用于代码块、终端命令、API 密钥、文件路径等技术内容，每个字符等宽显示，避免 0/O、1/l 混淆",
+    monoFontDescription:
+      "用于代码块、终端命令、API 密钥、文件路径等技术内容，每个字符等宽显示，避免 0/O、1/l 混淆",
     selectFont: "选择字体",
     sansPreview: "示例 Sample 字体 Font — Aa Gg Oo 0123",
     monoPreview: "const msg = 'Hello'; // 0O1l",
@@ -2543,7 +2632,8 @@ export default {
       titlePlaceholder: "请输入标题",
       contentPlaceholder: "支持 Markdown 语法，可使用 # 标题、列表、代码块等",
     },
-    noDocumentKnowledgeBases: "暂无可用的文档型知识库，请先创建一个文档型知识库",
+    noDocumentKnowledgeBases:
+      "暂无可用的文档型知识库，请先创建一个文档型知识库",
     status: {
       draftTag: "当前状态：草稿",
       publishedTag: "当前状态：已发布",
@@ -2709,7 +2799,8 @@ export default {
       typeLabel: "知识库类型",
       typeDocument: "文档",
       typeFAQ: "问答",
-      typeDescription: "FAQ 类型适合结构化问答数据；文档型支持文件解析与分块；Wiki 类型由 LLM 自动构建互链知识页面。",
+      typeDescription:
+        "FAQ 类型适合结构化问答数据；文档型支持文件解析与分块；Wiki 类型由 LLM 自动构建互链知识页面。",
       nameLabel: "知识库名称",
       namePlaceholder: "请输入知识库名称",
       descriptionLabel: "知识库描述",
@@ -2725,13 +2816,17 @@ export default {
       maxPagesLabel: "单次最大页面数",
       maxPagesTip: "每次 Ingest 最多创建/更新的页面数（0 表示不限制）",
       extractionGranularityLabel: "提取粒度",
-      extractionGranularityTip: "控制每篇文档抽取的 Wiki 实体/概念数量。粒度越细，索引越聚焦；粒度越粗，索引越详尽",
+      extractionGranularityTip:
+        "控制每篇文档抽取的 Wiki 实体/概念数量。粒度越细，索引越聚焦；粒度越粗，索引越详尽",
       granularityFocused: "聚焦",
       granularityStandard: "标准",
       granularityExhaustive: "详尽",
-      granularityFocusedHint: "只抽取文档的主角（如简历 → 人物和项目）。最干净，但可能漏掉次要实体。",
-      granularityStandardHint: "抽取主角 + 被详细描述的次要实体/概念。跳过一带而过的通用名词。适合大多数场景。",
-      granularityExhaustiveHint: "抽取所有可识别的命名实体与概念，包括一带而过的技术栈。适合将知识库当作术语表使用。",
+      granularityFocusedHint:
+        "只抽取文档的主角（如简历 → 人物和项目）。最干净，但可能漏掉次要实体。",
+      granularityStandardHint:
+        "抽取主角 + 被详细描述的次要实体/概念。跳过一带而过的通用名词。适合大多数场景。",
+      granularityExhaustiveHint:
+        "抽取所有可识别的命名实体与概念，包括一带而过的技术栈。适合将知识库当作术语表使用。",
     },
     indexing: {
       title: "索引策略",
@@ -2745,18 +2840,21 @@ export default {
       atLeastOne: "至少需要开启一种索引策略",
       embeddingRequired: "RAG 检索需要配置 Embedding 模型",
       wikiModelRequired: "Wiki 知识库需要配置合成模型",
-      lockedTip: "知识库已有内容，索引策略暂不支持调整。如需变更，请先清空知识库。",
+      lockedTip:
+        "知识库已有内容，索引策略暂不支持调整。如需变更，请先清空知识库。",
       rebuildConfirmTitle: "重建索引",
-      rebuildConfirmBody: "索引策略已变更，是否对已有的 {count} 篇文档重新处理？这可能需要一些时间。",
+      rebuildConfirmBody:
+        "索引策略已变更，是否对已有的 {count} 篇文档重新处理？这可能需要一些时间。",
       rebuildSuccess: "已提交重建任务，共 {count} 篇文档",
       rebuildSkip: "稍后可在数据源中手动触发重建",
     },
     wikiBrowser: {
-      viewInGraph: '在图谱中查看',
+      viewInGraph: "在图谱中查看",
       tabDocuments: "文档",
       tabWiki: "Wiki",
       tabGraph: "图谱",
-      tabGraphTip: "Wiki 页面之间的引用关系图（即页面链接图谱），与「知识库设置 → 知识图谱」中基于 LLM 抽取的实体-关系图谱不是同一个概念",
+      tabGraphTip:
+        "Wiki 页面之间的引用关系图（即页面链接图谱），与「知识库设置 → 知识图谱」中基于 LLM 抽取的实体-关系图谱不是同一个概念",
       searchPlaceholder: "搜索 Wiki 页面...",
       searchNoResults: "没有找到匹配的页面",
       loadMore: "加载更多（还剩 {remaining} 条）",
@@ -2780,49 +2878,54 @@ export default {
       recentActivity: "最近活动",
       graphEmpty: "加载图谱中...",
       fitView: "适应屏幕",
-      logTitle: '日志',
-      indexTitle: '索引',
-      logFeedTag: '事件流',
-      logEmpty: '暂无日志记录',
-      logLoading: '加载中…',
-      logLoadMore: '加载更多',
-      indexOverviewTag: '分类目录',
-      indexEmpty: '暂无 Wiki 页面，请先上传文档',
-      graphNoData: '暂无图谱数据，请先上传文档（这里展示的是 Wiki 页面之间的链接关系，与「知识库设置 → 知识图谱」中的实体-关系图谱不同）',
-      showArrows: '显示箭头',
-      hideArrows: '隐藏箭头',
-      expandNeighbors: '展开邻居',
-      bloomNeighbors: '叠加邻居',
-      growFrontier: '扩张边缘 ({count})',
-      growFrontierTitle: '一键展开当前所有 {count} 个带虚线环的节点',
-      cardEgoTitle: '当前焦点',
-      cardOverviewTitle: '全库概览',
-      cardOverviewPrimary: '{returned} / {total} 个节点',
-      cardOverviewHintTruncated: '双击任意节点聚焦到该节点的子图',
-      cardOverviewHintFull: '已展示知识库全部节点',
-      cardRelatedNodes: '{count} 个相关节点',
-      helpButtonTitle: '操作帮助',
-      helpTitle: '画布操作',
-      helpClickAction: '单击',
-      helpClickDesc: '打开节点详情',
-      helpDblClickAction: '双击',
-      helpDblClickDesc: '以该节点为中心聚焦',
-      helpShiftClickAction: 'Shift + 单击',
-      helpShiftClickDesc: '叠加该节点邻居到画布',
-      helpHoverPlusAction: '悬浮 → ⊕',
-      helpHoverPlusDesc: '同 Shift + 单击',
-      helpDragAction: '拖拽节点',
-      helpDragDesc: '手动调整节点位置',
-      helpPanAction: '拖拽空白',
-      helpPanDesc: '平移画布',
-      helpZoomAction: '滚轮',
-      helpZoomDesc: '缩放画布',
-      neighborsProgress: '已显示邻居 {visible}/{total}（还有 {hidden} 个未加载）',
-      neighborsAllShown: '全部 {total} 个邻居已在图中（可点"展开邻居"聚焦到该节点子图）',
-      neighborsNone: '该节点没有链接邻居',
-      neighborsCenterUnreachable: '已显示邻居 {visible}/{total}（还有 {hidden} 个无法连通：可能是死链、被过滤或已删除）',
-      neighborsOverviewHidden: '已显示邻居 {visible}/{total}（{hidden} 个不在概览范围，点"展开邻居"以此为中心查看）',
-      backToOverview: '返回概览',
+      logTitle: "日志",
+      indexTitle: "索引",
+      logFeedTag: "事件流",
+      logEmpty: "暂无日志记录",
+      logLoading: "加载中…",
+      logLoadMore: "加载更多",
+      indexOverviewTag: "分类目录",
+      indexEmpty: "暂无 Wiki 页面，请先上传文档",
+      graphNoData:
+        "暂无图谱数据，请先上传文档（这里展示的是 Wiki 页面之间的链接关系，与「知识库设置 → 知识图谱」中的实体-关系图谱不同）",
+      showArrows: "显示箭头",
+      hideArrows: "隐藏箭头",
+      expandNeighbors: "展开邻居",
+      bloomNeighbors: "叠加邻居",
+      growFrontier: "扩张边缘 ({count})",
+      growFrontierTitle: "一键展开当前所有 {count} 个带虚线环的节点",
+      cardEgoTitle: "当前焦点",
+      cardOverviewTitle: "全库概览",
+      cardOverviewPrimary: "{returned} / {total} 个节点",
+      cardOverviewHintTruncated: "双击任意节点聚焦到该节点的子图",
+      cardOverviewHintFull: "已展示知识库全部节点",
+      cardRelatedNodes: "{count} 个相关节点",
+      helpButtonTitle: "操作帮助",
+      helpTitle: "画布操作",
+      helpClickAction: "单击",
+      helpClickDesc: "打开节点详情",
+      helpDblClickAction: "双击",
+      helpDblClickDesc: "以该节点为中心聚焦",
+      helpShiftClickAction: "Shift + 单击",
+      helpShiftClickDesc: "叠加该节点邻居到画布",
+      helpHoverPlusAction: "悬浮 → ⊕",
+      helpHoverPlusDesc: "同 Shift + 单击",
+      helpDragAction: "拖拽节点",
+      helpDragDesc: "手动调整节点位置",
+      helpPanAction: "拖拽空白",
+      helpPanDesc: "平移画布",
+      helpZoomAction: "滚轮",
+      helpZoomDesc: "缩放画布",
+      neighborsProgress:
+        "已显示邻居 {visible}/{total}（还有 {hidden} 个未加载）",
+      neighborsAllShown:
+        '全部 {total} 个邻居已在图中（可点"展开邻居"聚焦到该节点子图）',
+      neighborsNone: "该节点没有链接邻居",
+      neighborsCenterUnreachable:
+        "已显示邻居 {visible}/{total}（还有 {hidden} 个无法连通：可能是死链、被过滤或已删除）",
+      neighborsOverviewHidden:
+        '已显示邻居 {visible}/{total}（{hidden} 个不在概览范围，点"展开邻居"以此为中心查看）',
+      backToOverview: "返回概览",
       healthCheck: "健康检查",
       queueStatus: "Wiki 队列中 {count} 个待处理任务",
       issueTitle: "此页面存在 {count} 个待处理的知识冲突或错误",
@@ -2872,21 +2975,26 @@ export default {
       buildDataFailed: "数据构建失败",
       updateSuccess: "配置保存成功",
       indexModeRequired: "请选择 FAQ 的索引方式",
-      storageChangeConfirm: "知识库中已有文件，更改存储引擎后旧文件可能无法正常访问。是否确认更改？",
+      storageChangeConfirm:
+        "知识库中已有文件，更改存储引擎后旧文件可能无法正常访问。是否确认更改？",
     },
     document: {
       title: "文档",
-      subtitle: "支持点击或拖拽上传，多格式文档自动解析并智能分块，快速构建可检索的知识库",
+      subtitle:
+        "支持点击或拖拽上传，多格式文档自动解析并智能分块，快速构建可检索的知识库",
     },
     faq: {
       title: "问答",
-      subtitle: "结构化问答管理，支持标准问、相似问和反例，精准匹配用户查询，提升问答准确率",
+      subtitle:
+        "结构化问答管理，支持标准问、相似问和反例，精准匹配用户查询，提升问答准确率",
       description: "设置 FAQ 知识库的索引策略和问答组织方式",
       indexModeLabel: "索引方式",
       indexModeDescription: "仅索引问题可提升精度，索引问答可提高召回率",
       questionIndexModeLabel: "问题索引方式",
-      questionIndexModeDescription: "合并索引：标准问和相似问合并索引；分别索引：标准问和每个相似问独立索引，检索更精确但需要更多存储",
-      entryGuide: "FAQ 条目由标准问、相似问、反例和多个答案组成，可在知识库详情中批量导入、编辑。",
+      questionIndexModeDescription:
+        "合并索引：标准问和相似问合并索引；分别索引：标准问和每个相似问独立索引，检索更精确但需要更多存储",
+      entryGuide:
+        "FAQ 条目由标准问、相似问、反例和多个答案组成，可在知识库详情中批量导入、编辑。",
       tagDesc: "为 FAQ 条目选择分类",
       tagPlaceholder: "请选择分类",
       modes: {
@@ -2900,7 +3008,8 @@ export default {
       answers: "答案",
       answersDesc: "提供完整准确的答案内容，可添加多个答案以覆盖不同场景。",
       similarQuestions: "相似问",
-      similarQuestionsDesc: "添加与标准问意思相同但表述不同的问题，帮助系统更好地匹配用户查询。",
+      similarQuestionsDesc:
+        "添加与标准问意思相同但表述不同的问题，帮助系统更好地匹配用户查询。",
       negativeQuestions: "反例",
       negativeQuestionsDesc: "添加不应匹配此答案的问题，用于排除误匹配的情况。",
       categoryLabel: "FAQ 分类",
@@ -2908,7 +3017,8 @@ export default {
       editorCreate: "新增 FAQ 条目",
       editorEdit: "编辑 FAQ 条目",
       addAnswer: "添加答案",
-      answerPlaceholder: "请输入答案内容，支持多行文本，按 Ctrl+Enter 或点击按钮添加",
+      answerPlaceholder:
+        "请输入答案内容，支持多行文本，按 Ctrl+Enter 或点击按钮添加",
       similarPlaceholder: "输入相似问题后点击加号添加",
       negativePlaceholder: "输入反例后点击加号添加",
       answerRequired: "请至少填写一个答案",
@@ -2966,7 +3076,8 @@ export default {
       appendMode: "追加导入",
       replaceMode: "替换现有条目",
       fileLabel: "选择文件",
-      fileTip: "支持 JSON / CSV / Excel。CSV/Excel 表头：分类(必填)、问题(必填)、相似问题(选填-多个用##分隔)、反例问题(选填-多个用##分隔)、机器人回答(必填-多个用##分隔)、是否全部回复(选填-默认FALSE)、是否停用(选填-默认FALSE)、是否禁止被推荐(选填-默认False 可被推荐)。也支持旧格式：standard_question、answers、similar_questions、negative_questions",
+      fileTip:
+        "支持 JSON / CSV / Excel。CSV/Excel 表头：分类(必填)、问题(必填)、相似问题(选填-多个用##分隔)、反例问题(选填-多个用##分隔)、机器人回答(必填-多个用##分隔)、是否全部回复(选填-默认FALSE)、是否停用(选填-默认FALSE)、是否禁止被推荐(选填-默认False 可被推荐)。也支持旧格式：standard_question、answers、similar_questions、negative_questions",
       clickToUpload: "点击上传文件",
       dragDropTip: "或拖拽文件到此处",
       importButton: "导入 FAQ",
@@ -3005,14 +3116,18 @@ export default {
     },
     chunking: {
       title: "分块设置",
-      description: "控制上传文档在嵌入前的切分方式。默认值适用于大多数场景，仅在检索质量异常时调整。",
+      description:
+        "控制上传文档在嵌入前的切分方式。默认值适用于大多数场景，仅在检索质量异常时调整。",
       sizeLabel: "分块大小",
-      sizeDescription: "每个分块的最大字符数（100-4000）。默认 512 ≈ 中文 300 tokens / 英文 100-130 tokens。FAQ 用 200-400，叙述性长文档用 1000-2000。",
+      sizeDescription:
+        "每个分块的最大字符数（100-4000）。默认 512 ≈ 中文 300 tokens / 英文 100-130 tokens。FAQ 用 200-400，叙述性长文档用 1000-2000。",
       characters: "字符",
       overlapLabel: "分块重叠",
-      overlapDescription: "相邻分块之间共享的字符数（0-500）。默认 80 ≈ 分块大小的 15%，符合当前研究推荐。FAQ/结构化数据用 0，长篇叙述用 150-200。",
+      overlapDescription:
+        "相邻分块之间共享的字符数（0-500）。默认 80 ≈ 分块大小的 15%，符合当前研究推荐。FAQ/结构化数据用 0，长篇叙述用 150-200。",
       separatorsLabel: "分隔符",
-      separatorsDescription: "切分时优先使用的字符或字符串。优先级高的分隔符先尝试；默认顺序优先段落 → 句子 → 标点。",
+      separatorsDescription:
+        "切分时优先使用的字符或字符串。优先级高的分隔符先尝试；默认顺序优先段落 → 句子 → 标点。",
       separatorsPlaceholder: "选择或自定义分隔符",
       separators: {
         doubleNewline: "双换行 (\\n\\n)",
@@ -3025,55 +3140,66 @@ export default {
         space: "空格 ( )",
       },
       parentChildLabel: "父子分块",
-      parentChildDescription: "两级分块：小的子块用于向量匹配（精准命中），大的父块返回给 LLM（更丰富上下文）。建议用于长文档（>10 页）；短 FAQ 可关闭以节省存储。",
+      parentChildDescription:
+        "两级分块：小的子块用于向量匹配（精准命中），大的父块返回给 LLM（更丰富上下文）。建议用于长文档（>10 页）；短 FAQ 可关闭以节省存储。",
       parentChunkSizeLabel: "父块大小",
-      parentChunkSizeDescription: "返回给 LLM 的上下文块大小（512-8192）。默认 4096 ≈ 1000 英文 tokens，适合所有现代 LLM 上下文窗口。",
+      parentChunkSizeDescription:
+        "返回给 LLM 的上下文块大小（512-8192）。默认 4096 ≈ 1000 英文 tokens，适合所有现代 LLM 上下文窗口。",
       childChunkSizeLabel: "子块大小",
-      childChunkSizeDescription: "用于向量匹配的嵌入块大小（64-2048）。默认 384 ≈ 80 tokens，是 sentence-transformer / BGE 类嵌入模型的最佳点。",
+      childChunkSizeDescription:
+        "用于向量匹配的嵌入块大小（64-2048）。默认 384 ≈ 80 tokens，是 sentence-transformer / BGE 类嵌入模型的最佳点。",
       strategyLabel: "分块策略",
-      strategyDescription: "选择文档的分块方式。自动模式会分析每个文档的结构并选择最佳策略。",
+      strategyDescription:
+        "选择文档的分块方式。自动模式会分析每个文档的结构并选择最佳策略。",
       strategyPlaceholder: "选择分块策略（不填则按长度切分）",
       strategies: {
         auto: {
           label: "自动",
-          tooltip: "文档分析器根据内容结构自动在「按标题切分」「结构感知」「按长度切分」之间选择。"
+          tooltip:
+            "文档分析器根据内容结构自动在「按标题切分」「结构感知」「按长度切分」之间选择。",
         },
         heading: {
           label: "按标题切分",
-          tooltip: "在 Markdown 标题（#、##、###）边界处切分，每块自动带上所在标题路径。适合结构清晰的 Markdown 文档。"
+          tooltip:
+            "在 Markdown 标题（#、##、###）边界处切分，每块自动带上所在标题路径。适合结构清晰的 Markdown 文档。",
         },
         heuristic: {
           label: "结构感知",
-          tooltip: "识别分页符、编号章节、多语言章节标记（DE/EN/ZH）、全大写标题等结构信号进行切分。适合没有 Markdown 标题的 PDF / 扫描件。"
+          tooltip:
+            "识别分页符、编号章节、多语言章节标记（DE/EN/ZH）、全大写标题等结构信号进行切分。适合没有 Markdown 标题的 PDF / 扫描件。",
         },
         legacy: {
           label: "按长度切分",
-          tooltip: "忽略结构，仅按字符数和分隔符递归切分——原始行为。当上述策略对你的内容效果不佳时使用。"
-        }
+          tooltip:
+            "忽略结构，仅按字符数和分隔符递归切分——原始行为。当上述策略对你的内容效果不佳时使用。",
+        },
       },
       overlapWarning: "重叠相对于分块大小较大——分块之间会共享大部分内容。",
       advancedLabel: "高级选项",
       tokenLimitLabel: "每块 Token 上限",
-      tokenLimitDescription: "每个分块的硬性 Token 上限（0-8192）。0 = 关闭（仅按字符数）。当嵌入模型 Token 上限较小时启用：MiniLM (256 tok) 用 200，BGE/Cohere (512 tok) 用 400。现代嵌入器（OpenAI、Voyage、Jina-v3）支持 >2000 tokens，保持 0 即可。",
+      tokenLimitDescription:
+        "每个分块的硬性 Token 上限（0-8192）。0 = 关闭（仅按字符数）。当嵌入模型 Token 上限较小时启用：MiniLM (256 tok) 用 200，BGE/Cohere (512 tok) 用 400。现代嵌入器（OpenAI、Voyage、Jina-v3）支持 >2000 tokens，保持 0 即可。",
       languagesLabel: "语言提示",
-      languagesDescription: "限制启发式模式只识别选定的语言（DE/EN/ZH）。留空 = 自动检测。同质化语料库可显式设置以避免跨语言误匹配。",
+      languagesDescription:
+        "限制启发式模式只识别选定的语言（DE/EN/ZH）。留空 = 自动检测。同质化语料库可显式设置以避免跨语言误匹配。",
       languagesPlaceholder: "自动检测",
       languageOptions: {
         de: "德语",
         en: "英语",
-        zh: "中文"
+        zh: "中文",
       },
       debug: {
         toggle: "测试分块效果",
         toggleHint: "无需重新上传即可对示例文本运行分块器",
         sampleLabel: "示例文本",
-        samplePlaceholder: "粘贴 Markdown / 纯文本片段以查看当前配置的分块结果…",
+        samplePlaceholder:
+          "粘贴 Markdown / 纯文本片段以查看当前配置的分块结果…",
         presetLabel: "载入示例：",
         samples: {
           markdown: "Markdown 文档",
           faq: "FAQ 列表",
           chapter: "PDF 章节",
-          plain: "纯文本"
+          plain: "纯文本",
         },
         runButton: "运行预览",
         loading: "正在对示例运行分块器…",
@@ -3088,21 +3214,23 @@ export default {
           headings: "Markdown 标题",
           pageBreaks: "分页符",
           chapterMarkers: "章节标记",
-          languages: "语言"
+          languages: "语言",
         },
         stats: {
           chunks: "块",
-          truncated: "已截断；总数 {total}"
-        }
-      }
+          truncated: "已截断；总数 {total}",
+        },
+      },
     },
     multimodal: {
       title: "图像处理配置",
-      description: "配置图像内容理解能力，启用后支持图片等非文本内容的解析和检索",
+      description:
+        "配置图像内容理解能力，启用后支持图片等非文本内容的解析和检索",
     },
     asr: {
       title: "音频语音识别",
-      description: "配置语音识别（ASR），启用后可上传音频文件并整段转写为文本（常见格式：mp3、wav、m4a、flac、ogg 等）。暂不支持视频上传。",
+      description:
+        "配置语音识别（ASR），启用后可上传音频文件并整段转写为文本（常见格式：mp3、wav、m4a、flac、ogg 等）。暂不支持视频上传。",
       label: "启用音频语音识别",
       desc: "启用后可上传音频到知识库，系统自动将语音转写为文本并参与解析与检索",
       modelLabel: "ASR 模型",
@@ -3114,7 +3242,8 @@ export default {
       description: "配置问题生成等高级功能",
       questionGeneration: {
         label: "AI 问题生成",
-        description: "解析文档时调用大模型为每个分块生成相关问题，提高检索召回率。启用后会增加文档解析耗时。",
+        description:
+          "解析文档时调用大模型为每个分块生成相关问题，提高检索召回率。启用后会增加文档解析耗时。",
         countLabel: "生成问题数量",
         countDescription: "每个文档分块生成的问题数量（1-10）",
       },
@@ -3132,7 +3261,8 @@ export default {
           minio: "MinIO",
           cos: "腾讯云 COS",
         },
-        minioDisabledWarning: "MinIO 未启用，已自动切换到腾讯云 COS。如需使用 MinIO，请先在系统配置中启用 MinIO。",
+        minioDisabledWarning:
+          "MinIO 未启用，已自动切换到腾讯云 COS。如需使用 MinIO，请先在系统配置中启用 MinIO。",
         minio: {
           bucketLabel: "Bucket 名称",
           bucketDescription: "MinIO 存储桶名称（必填）",
@@ -3141,7 +3271,7 @@ export default {
           policyLabels: {
             public: "公有读",
             private: "私有",
-            custom: "自定义"
+            custom: "自定义",
           },
           useSslLabel: "使用 SSL",
           useSslDescription: "是否使用 SSL 连接",
@@ -3193,8 +3323,10 @@ export default {
     customAgentMissingSummaryModel: "对话模型（Summary Model）",
     customAgentMissingRerankModel: "重排模型（Rerank Model）",
     goToAgentEditor: "前往配置 →",
-    agentNotReadyDetail: "智能体「{agentName}」未就绪，需要配置以下内容：{reasons}",
-    builtinAgentNotReadyDetail: "内置智能体「{agentName}」未就绪，需要配置以下内容：{reasons}",
+    agentNotReadyDetail:
+      "智能体「{agentName}」未就绪，需要配置以下内容：{reasons}",
+    builtinAgentNotReadyDetail:
+      "内置智能体「{agentName}」未就绪，需要配置以下内容：{reasons}",
     builtinAgentSettingName: "智能推理",
     builtinNormalSettingName: "快速问答",
     webSearch: {
@@ -3221,8 +3353,7 @@ export default {
       agentSelected: "已选择智能体「{name}」",
       agentEnabled: "Agent 模式已启用",
       agentDisabled: "Agent 模式已禁用",
-      agentNotReadyDetail:
-        "Agent 未就绪，需要配置以下内容：{reasons}",
+      agentNotReadyDetail: "Agent 未就绪，需要配置以下内容：{reasons}",
       webSearchNotConfigured:
         "未配置网络搜索引擎，请先在设置中完成搜索引擎选择与接口配置。",
       webSearchEnabled: "网络搜索已开启",
@@ -3248,7 +3379,8 @@ export default {
       "配置 AI Agent 的默认行为和参数，这些设置将应用于所有启用 Agent 模式的对话",
     modelRecommendation: {
       title: "模型推荐",
-      content: "为获得更好的 Agent 体验，建议使用支持 FunctionCalling 的长上下文大语言模型，如 deepseek-v3.1-terminus 等",
+      content:
+        "为获得更好的 Agent 体验，建议使用支持 FunctionCalling 的长上下文大语言模型，如 deepseek-v3.1-terminus 等",
     },
     status: {
       label: "Agent 状态",
@@ -3300,14 +3432,17 @@ export default {
       custom: "自定义 Prompt",
       disabledHint: "当前使用系统默认 Prompt，开启自定义后才会应用下方内容。",
       placeholder: "请输入系统 Prompt，或留空使用默认 Prompt...",
-      tabHint: "统一的系统提示词，使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为",
-      tabHintDetail: "统一的系统提示词，使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为（留空则使用系统默认，使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为）",
+      tabHint:
+        "统一的系统提示词，使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为",
+      tabHintDetail:
+        "统一的系统提示词，使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为（留空则使用系统默认，使用 {'{{'}web_search_status{'}}'} 占位符动态控制网络搜索行为）",
     },
     reset: {
       header: "恢复默认 Prompt",
       body: "确定要恢复为默认 Prompt 吗？当前的自定义 Prompt 将被覆盖。",
     },
-    globalConfigNotice: "这些是全局默认配置，新建智能体时会继承这些设置。您也可以在智能体列表中单独配置每个智能体。",
+    globalConfigNotice:
+      "这些是全局默认配置，新建智能体时会继承这些设置。您也可以在智能体列表中单独配置每个智能体。",
     loadConfigFailed: "加载Agent配置失败",
     loadModelsFailed: "加载模型列表失败",
     errors: {
@@ -3331,7 +3466,8 @@ export default {
     },
   },
   conversationSettings: {
-    description: "配置对话模式的默认行为和参数，包括Agent模式和普通模式的Prompt设置",
+    description:
+      "配置对话模式的默认行为和参数，包括Agent模式和普通模式的Prompt设置",
     agentMode: "Agent模式",
     normalMode: "普通模式",
     menus: {
@@ -3343,7 +3479,8 @@ export default {
     models: {
       description: "统一管理 Agent 和普通模式使用的对话/总结模型与 ReRank 模型",
       chatGroupLabel: "思考 / 对话模型",
-      chatGroupDesc: "包含 Agent 推理与规划模型，以及普通模式默认的对话/总结模型",
+      chatGroupDesc:
+        "包含 Agent 推理与规划模型，以及普通模式默认的对话/总结模型",
       chatModel: {
         label: "普通模式默认对话模型",
         desc: "普通模式默认使用的对话/总结模型，当会话未指定模型时生效",
@@ -3355,7 +3492,8 @@ export default {
         placeholder: "请选择默认 ReRank 模型",
       },
       rerankGroupLabel: "ReRank 模型",
-      rerankGroupDesc: "包含 Agent 使用的重排序模型，以及普通模式默认 ReRank 模型",
+      rerankGroupDesc:
+        "包含 Agent 使用的重排序模型，以及普通模式默认 ReRank 模型",
     },
     thresholds: {
       description: "调整召回与重排序的阈值与 TopK，平衡准确率与性能",
@@ -3426,10 +3564,12 @@ export default {
     contextTemplate: {
       label: "总结Prompt",
       desc: "用于普通模式下基于检索结果生成回答的Prompt模板",
-      descWithDefault: "用于普通模式下基于检索结果生成回答的Prompt模板（留空则使用系统默认）",
+      descWithDefault:
+        "用于普通模式下基于检索结果生成回答的Prompt模板（留空则使用系统默认）",
       placeholder: "请输入检索结果总结的Prompt模板...",
       custom: "自定义模板",
-      disabledHint: "当前使用系统默认总结 Prompt，开启自定义后才会应用下方内容。",
+      disabledHint:
+        "当前使用系统默认总结 Prompt，开启自定义后才会应用下方内容。",
     },
     systemPrompt: {
       label: "系统Prompt",
@@ -3580,7 +3720,8 @@ export default {
     copySuffix: " 副本",
     builtinModels: {
       title: "内置模型",
-      description: "内置模型对所有租户可见，敏感信息会被隐藏，且不可编辑或删除。",
+      description:
+        "内置模型对所有租户可见，敏感信息会被隐藏，且不可编辑或删除。",
       viewGuide: "查看内置模型管理指南",
     },
     builtinTag: "内置",
@@ -3717,7 +3858,8 @@ export default {
     inviteCodeRefreshFailed: "刷新邀请码失败",
     rbac: {
       needTenantAdmin: "需要空间管理员权限",
-      needTenantAdminTip: "此操作需要当前空间的 admin 或更高角色，请联系空间 Owner 调整权限。",
+      needTenantAdminTip:
+        "此操作需要当前空间的 admin 或更高角色，请联系空间 Owner 调整权限。",
       cannotCreate: "当前空间角色不足，无法创建共享空间",
       cannotJoin: "当前空间角色不足，无法加入或申请加入共享空间",
       cannotManage: "当前空间角色不足，无法管理共享空间",
@@ -3782,12 +3924,14 @@ export default {
     leave: "退出空间",
     leaveConfirm: "确定要退出该空间吗？",
     leaveConfirmTitle: "退出空间",
-    leaveConfirmMessage: "确定要退出空间「{name}」吗？退出后将无法访问该空间共享的知识库。",
+    leaveConfirmMessage:
+      "确定要退出空间「{name}」吗？退出后将无法访问该空间共享的知识库。",
     leaveSuccess: "已退出空间",
     leaveFailed: "退出空间失败",
     deleteConfirm: "确定要删除该空间吗？此操作不可撤销。",
     deleteConfirmTitle: "删除空间",
-    deleteConfirmMessage: "确定要删除空间「{name}」吗？删除后所有成员将被移除，此操作不可撤销。",
+    deleteConfirmMessage:
+      "确定要删除空间「{name}」吗？删除后所有成员将被移除，此操作不可撤销。",
     deleteSuccess: "空间已删除",
     deleteFailed: "删除空间失败",
     createSuccess: "空间创建成功",
@@ -3828,25 +3972,31 @@ export default {
       editTitle: "空间设置",
       detailTitle: "空间详情",
       myRoleDesc: "您在此空间中的角色决定了您的权限范围",
-      membersDesc: "查看和管理共享空间成员、调整成员角色。成员的最小单位是空间——加入后该空间下的所有用户都将获得访问权限。",
+      membersDesc:
+        "查看和管理共享空间成员、调整成员角色。成员的最小单位是空间——加入后该空间下的所有用户都将获得访问权限。",
       sharedDesc: "查看共享到此空间的所有知识库",
       noSharedKB: "暂无共享的知识库",
       noSharedKBTip: "知识库拥有者可以在知识库设置中将其共享到此空间",
       sharedAgents: "共享智能体",
       noSharedAgents: "暂无共享的智能体",
       sharedAgentsDesc: "已共享到本空间的智能体，成员可在对话中使用",
-      sharedAgentsKbHint: "智能体绑定的知识库仅在成员使用该智能体对话时可 {'@'} 使用（只读），不会出现在「知识库列表」中。若需成员在列表中看到或编辑知识库，请单独将知识库共享到本空间。",
-      sharedAgentsKbHintShort: "智能体绑定知识仅对话内只读；需在列表看到或编辑请单独共享知识库",
+      sharedAgentsKbHint:
+        "智能体绑定的知识库仅在成员使用该智能体对话时可 {'@'} 使用（只读），不会出现在「知识库列表」中。若需成员在列表中看到或编辑知识库，请单独将知识库共享到本空间。",
+      sharedAgentsKbHintShort:
+        "智能体绑定知识仅对话内只读；需在列表看到或编辑请单独共享知识库",
       noSharedAgentsTip: "管理员可将智能体从智能体设置中共享到本空间",
       sharePermissionLabel: "空间权限",
       myPermissionLabel: "我的实际权限",
-      permissionCalcFormula: "空间权限为共享时给该空间设定的权限；我的实际权限 = min(空间权限, 我在本空间的角色)",
-      permissionCalcTip: "我的实际权限 = min(空间权限, 我在本空间的角色)。我在空间内是只读时，对此知识库最多只读；是编辑或管理员时，不超过空间权限。",
+      permissionCalcFormula:
+        "空间权限为共享时给该空间设定的权限；我的实际权限 = min(空间权限, 我在本空间的角色)",
+      permissionCalcTip:
+        "我的实际权限 = min(空间权限, 我在本空间的角色)。我在空间内是只读时，对此知识库最多只读；是编辑或管理员时，不超过空间权限。",
       inviteMembers: "邀请成员",
       inviteMembersDesc: "通过邀请码或链接邀请他人加入空间",
       inviteLink: "邀请链接",
       inviteLinkValidity: "邀请链接有效期",
-      inviteLinkValidityDesc: "新生成的邀请链接的有效期，仅影响之后刷新生成的链接",
+      inviteLinkValidityDesc:
+        "新生成的邀请链接的有效期，仅影响之后刷新生成的链接",
       validity1Day: "1 天",
       validity7Days: "7 天",
       validity30Days: "30 天",
@@ -3855,14 +4005,17 @@ export default {
       remainingValidityNever: "永不过期",
       remainingValidityExpired: "已过期",
       removeShareFromOrg: "从空间中移除",
-      removeShareConfirm: "确定将「{name}」从本空间中移除？移除后空间成员将无法再访问该知识库。",
-      removeAgentShareConfirm: "确定将「{name}」从本空间中移除？移除后空间成员将无法再访问该智能体。",
+      removeShareConfirm:
+        "确定将「{name}」从本空间中移除？移除后空间成员将无法再访问该知识库。",
+      removeAgentShareConfirm:
+        "确定将「{name}」从本空间中移除？移除后空间成员将无法再访问该智能体。",
       removeShareSuccess: "已从空间中移除",
       removeShareFailed: "移除失败，请重试",
       requireApproval: "需要审核",
       requireApprovalDesc: "开启后，新成员加入需要管理员审核",
       searchable: "开放可被搜索",
-      searchableDesc: "开启后，空间将出现在「加入空间」的搜索列表中，他人可搜索并申请加入，无需邀请码",
+      searchableDesc:
+        "开启后，空间将出现在「加入空间」的搜索列表中，他人可搜索并申请加入，无需邀请码",
       memberLimit: "成员数量上限",
       memberLimitDesc: "超过上限后无法再添加新成员；设为 0 表示不限制",
       memberLimitPlaceholder: "0 表示不限制",
@@ -3931,13 +4084,15 @@ export default {
       button: "添加成员",
       dialogTitle: "添加成员",
       tip: "添加的用户将立即成为空间成员，可以访问空间内共享的知识库。",
-      tipTenant: "共享空间的成员单位是空间：选定一个空间后，其下全部用户都将获得访问权限。下方搜索结果按空间去重。",
+      tipTenant:
+        "共享空间的成员单位是空间：选定一个空间后，其下全部用户都将获得访问权限。下方搜索结果按空间去重。",
       searchUser: "选择用户",
       searchTenant: "选择空间",
       searchPlaceholder: "输入用户名或邮箱搜索...",
       searchTenantPlaceholder: "输入空间名、用户名或邮箱搜索...",
       searchHint: "输入至少 2 个字符开始搜索",
-      searchTenantHint: "输入至少 2 个字符开始搜索，按空间去重并自动过滤已加入的空间",
+      searchTenantHint:
+        "输入至少 2 个字符开始搜索，按空间去重并自动过滤已加入的空间",
       selectRole: "分配角色",
       confirmBtn: "添加",
       success: "成员添加成功",
@@ -3959,7 +4114,8 @@ export default {
       selectOrg: "选择空间",
       selectOrgPlaceholder: "请选择要共享的空间",
       permission: "权限",
-      permissionTip: "可编辑权限允许成员修改知识库内容，只读权限仅允许检索和问答",
+      permissionTip:
+        "可编辑权限允许成员修改知识库内容，只读权限仅允许检索和问答",
       shareSuccess: "已共享",
       shareFailed: "共享失败",
       unshareSuccess: "已取消共享",
@@ -4101,15 +4257,18 @@ export default {
     },
     storage: {
       title: "存储引擎",
-      description: "选择文件存储引擎，影响文档上传存储和文档中图片的存储方式。参数在全局设置中配置。",
+      description:
+        "选择文件存储引擎，影响文档上传存储和文档中图片的存储方式。参数在全局设置中配置。",
       loading: "加载中...",
       engineLabel: "存储引擎",
       engineDesc: "选择该知识库使用的存储引擎，需在全局设置中已配置对应引擎。",
       selectPlaceholder: "请选择存储引擎",
       notConfigured: "未配置",
       unavailable: "不可用",
-      lockedHint: "知识库中已有文件，无法切换存储引擎。如需更换，请先清空知识库中的所有文件。",
-      changeWarning: "更改存储引擎仅影响新上传的文件。已有文件仍使用原存储引擎读取，但部分旧文件可能无法自动识别而导致访问失败。",
+      lockedHint:
+        "知识库中已有文件，无法切换存储引擎。如需更换，请先清空知识库中的所有文件。",
+      changeWarning:
+        "更改存储引擎仅影响新上传的文件。已有文件仍使用原存储引擎读取，但部分旧文件可能无法自动识别而导致访问失败。",
       goGlobalSettings: "去全局设置中配置",
       engineLocal: "Local（本地存储）",
       engineLocalDesc: "仅适合单机部署，简单轻量",
@@ -4129,7 +4288,8 @@ export default {
     },
     parser: {
       title: "解析引擎",
-      description: "为不同文件类型选择文档解析引擎。未配置的文件类型将使用内置解析引擎。",
+      description:
+        "为不同文件类型选择文档解析引擎。未配置的文件类型将使用内置解析引擎。",
       loading: "加载中...",
       noEngineAvailable: "暂无可用解析引擎，或文档解析服务未配置。",
       default: "默认",
@@ -4283,7 +4443,8 @@ export default {
     },
     intentPrompts: {
       title: "意图提示词",
-      sectionDesc: "为不同查询意图配置专属系统提示词；未自定义时使用系统默认模板",
+      sectionDesc:
+        "为不同查询意图配置专属系统提示词；未自定义时使用系统默认模板",
       intentLabel: "意图",
       intentDescription: "选择要编辑的意图专属系统提示词",
       promptPlaceholder: "输入自定义系统提示词...",
@@ -4309,7 +4470,8 @@ export default {
       multiTurn: "开启后将保留历史对话上下文",
       historyRounds: "保留最近几轮对话作为上下文",
       rewrite: "多轮对话时自动改写用户问题，消解指代和补全省略",
-      queryUnderstandModel: "用于问题理解（改写与意图识别）的模型，留空则复用主对话模型",
+      queryUnderstandModel:
+        "用于问题理解（改写与意图识别）的模型，留空则复用主对话模型",
       rewriteSystemPrompt: "用于问题改写的系统提示词（留空使用默认）",
       rewriteUserPrompt: "用于问题改写的用户提示词模板（留空使用默认）",
       selectTools: "选择 Agent 可以使用的工具",
@@ -4333,7 +4495,8 @@ export default {
     },
     im: {
       title: "IM 集成",
-      description: "将智能体接入即时通讯平台，支持企业微信、飞书、Slack、Telegram、钉钉、Mattermost和微信",
+      description:
+        "将智能体接入即时通讯平台，支持企业微信、飞书、Slack、Telegram、钉钉、Mattermost和微信",
       wecom: "企业微信",
       feishu: "飞书",
       slack: "Slack",
@@ -4360,23 +4523,28 @@ export default {
       telegramConsole: "Telegram BotFather",
       dingtalkConsole: "钉钉开放平台",
       dingtalkCardTemplateId: "卡片模板 ID（可选）",
-      dingtalkCardTemplateIdHint: "在 open-dev.dingtalk.com/fe/card 创建 AI 卡片模板，启用后支持打字机效果的流式输出",
+      dingtalkCardTemplateIdHint:
+        "在 open-dev.dingtalk.com/fe/card 创建 AI 卡片模板，启用后支持打字机效果的流式输出",
       mattermostConsole: "Mattermost 集成说明",
-      mattermostModeHint: "Mattermost 仅支持 Webhook（出站 Webhook + Bot Token）。",
+      mattermostModeHint:
+        "Mattermost 仅支持 Webhook（出站 Webhook + Bot Token）。",
       mattermostPostToMain: "回复显示在频道主时间线",
       mattermostPostToMainHint:
         "开启后 Bot 回复作为频道内新帖子；关闭（默认）则作为原消息的线程回复，主窗口仅显示「N 条回复」。",
       modeHint: "推荐使用 WebSocket 方式接入，配置更简单",
       consoleTip: "前往获取凭证信息",
-      wecomWSEndpointHint: "可选，私有化部署时填写自定义 WebSocket 地址，留空则使用默认公有云地址。内网地址需将域名加入 SSRF_WHITELIST 环境变量",
-      wecomAPIBaseURLHint: "可选，私有化部署时填写自定义 API 地址，留空则使用默认公有云地址。内网地址需将域名加入 SSRF_WHITELIST 环境变量",
+      wecomWSEndpointHint:
+        "可选，私有化部署时填写自定义 WebSocket 地址，留空则使用默认公有云地址。内网地址需将域名加入 SSRF_WHITELIST 环境变量",
+      wecomAPIBaseURLHint:
+        "可选，私有化部署时填写自定义 API 地址，留空则使用默认公有云地址。内网地址需将域名加入 SSRF_WHITELIST 环境变量",
       fileKnowledgeBase: "文件保存知识库",
       fileKnowledgeBasePlaceholder: "选择知识库（可选）",
       fileKnowledgeBaseHint: "配置后，用户发送的文件将自动保存到该知识库中",
       sessionMode: "会话模式",
       sessionModeUser: "按用户（默认）",
       sessionModeThread: "按话题",
-      sessionModeHint: "用户模式：每个用户独立对话，使用 /clear 开始新对话。话题模式：每个消息话题独立对话，同一话题中多人可协作。",
+      sessionModeHint:
+        "用户模式：每个用户独立对话，使用 /clear 开始新对话。话题模式：每个消息话题独立对话，同一话题中多人可协作。",
       wechatScanBind: "扫码绑定微信",
       wechatScanning: "请使用微信扫描二维码",
       wechatBindSuccess: "微信绑定成功",
@@ -4504,12 +4672,14 @@ export default {
       label: "语音上传",
       desc: "启用后用户可在对话中上传音频文件，系统将使用 ASR 模型自动转录为文字",
       asrModel: "ASR 模型",
-      asrModelDesc: "用于音频转录的语音识别模型，未配置时音频文件将以占位符形式传递",
+      asrModelDesc:
+        "用于音频转录的语音识别模型，未配置时音频文件将以占位符形式传递",
       asrModelPlaceholder: "请选择 ASR 模型",
     },
     faq: {
       title: "FAQ 优先策略",
-      tooltip: "当知识库中包含 FAQ（问答对）时，可以启用此策略让 FAQ 答案优先于普通文档",
+      tooltip:
+        "当知识库中包含 FAQ（问答对）时，可以启用此策略让 FAQ 答案优先于普通文档",
       enableLabel: "启用 FAQ 优先",
       enableDesc: "FAQ 答案将优先于普通文档被引用，提高回答准确性",
       thresholdLabel: "直接回答阈值",
@@ -4519,7 +4689,8 @@ export default {
     },
     dataAnalysis: {
       enableLabel: "启用表格数据分析",
-      enableDesc: "命中 CSV/Excel 类文件时，先调用大模型生成 DuckDB SQL 进行统计或筛选，再据此回答。会额外增加一次模型调用与几秒延迟，仅在确实需要时开启。",
+      enableDesc:
+        "命中 CSV/Excel 类文件时，先调用大模型生成 DuckDB SQL 进行统计或筛选，再据此回答。会额外增加一次模型调用与几秒延迟，仅在确实需要时开启。",
     },
     fallback: {
       fixed: "固定回复",
@@ -4622,15 +4793,18 @@ export default {
     untitled: "无标题",
     resourceLoadFailed: "加载资源列表失败",
     noResources: "未找到可同步的知识库空间",
-	noResourcesDesc: "应用需要通过群聊获得知识库访问权限才能拉取内容",
+    noResourcesDesc: "应用需要通过群聊获得知识库访问权限才能拉取内容",
     noResourcesDesc_notion: "应用需要获得 Notion 页面的访问权限才能拉取内容",
     retryLoadResources: "重新加载",
     guideStep1: "在飞书中创建一个群聊，在群设置「群机器人」中添加你的应用",
-    guideStep2: "打开知识库「设置」→「成员设置」→ 添加成员，搜索该群聊名称并添加",
+    guideStep2:
+      "打开知识库「设置」→「成员设置」→ 添加成员，搜索该群聊名称并添加",
     guideStep3: "确保群聊角色至少为「可阅读」，然后回到这里点重新加载",
     guideStep1_notion: "在 Notion 中打开你想要同步的页面或数据库",
-    guideStep2_notion: "点击右上角的「···」菜单，选择「Connect to」或「Add connections」",
-    guideStep3_notion: "搜索并选择你的集成应用（Integration），然后回到这里点重新加载",
+    guideStep2_notion:
+      "点击右上角的「···」菜单，选择「Connect to」或「Add connections」",
+    guideStep3_notion:
+      "搜索并选择你的集成应用（Integration），然后回到这里点重新加载",
     permissionDocLink: "查看飞书知识库权限配置文档",
     syncScheduleLabel: "同步频率",
     conflictLabel: "冲突策略",
@@ -4697,7 +4871,8 @@ export default {
       integrationToken: "Integration Token",
       apiToken: "API Token",
       baseUrl: "Base URL（可选）",
-      baseUrlHint: "留空将使用语雀公有云 https://www.yuque.com；如果你使用的是语雀企业版或私有部署，请填写企业域名（例如 https://your-company.yuque.com）",
+      baseUrlHint:
+        "留空将使用语雀公有云 https://www.yuque.com；如果你使用的是语雀企业版或私有部署，请填写企业域名（例如 https://your-company.yuque.com）",
     },
     comingSoon: "即将支持",
     docHint: "在以下地址获取凭证：",
@@ -4710,9 +4885,11 @@ export default {
     prereqStep1Brief_yuque: "创建语雀个人 Token",
     prereqStep1Desc_yuque: "登录语雀 → 个人头像 → 设置 → Token → 新建 Token",
     prereqStep2Brief_yuque: "为 Token 勾选所需权限",
-    prereqStep2Desc_yuque: "至少勾选 repo:read 和 doc:read（读取知识库和文档内容）",
+    prereqStep2Desc_yuque:
+      "至少勾选 repo:read 和 doc:read（读取知识库和文档内容）",
     prereqStep3Brief_yuque: "（可选）企业版填写 Base URL",
-    prereqStep3Desc_yuque: "公有云用户无需填写；语雀企业版或私有部署请填写企业域名",
+    prereqStep3Desc_yuque:
+      "公有云用户无需填写；语雀企业版或私有部署请填写企业域名",
     prereqOpenConsole_yuque: "前往语雀 Token 设置",
     prereqBotBrief: "为应用添加「机器人」能力",
     prereqBotDesc: "开放平台 → 添加应用能力 → 机器人 → 创建版本并发布",
@@ -4725,7 +4902,8 @@ export default {
     prereqOpenConsole: "前往飞书开放平台配置",
     prereqMemberBrief: "通过群聊添加为知识库成员",
     prereqMemberDesc: "创建群聊 → 添加应用为群机器人 → 将群聊添加为知识库成员",
-    prereqMemberLabel: "3. 通过群聊将应用添加为知识库成员（知识库无法直接搜到应用）：",
+    prereqMemberLabel:
+      "3. 通过群聊将应用添加为知识库成员（知识库无法直接搜到应用）：",
     back: "上一步",
     next: "下一步",
     save: "保存",
@@ -4735,11 +4913,11 @@ export default {
     schedule12h: "每 12 小时",
     schedule24h: "每天",
     scheduleHuman: {
-      '30min': "每 30 分钟",
-      '1h': "每小时",
-      '6h': "每 6 小时",
-      '12h': "每 12 小时",
-      '24h': "每天",
+      "30min": "每 30 分钟",
+      "1h": "每小时",
+      "6h": "每 6 小时",
+      "12h": "每 12 小时",
+      "24h": "每天",
     },
     addCard: "添加数据源",
     wikiSpace: "知识库空间",
@@ -4761,7 +4939,8 @@ export default {
   imOverview: {
     menuTitle: "已接入的 IM",
     pageTitle: "已接入的 IM",
-    subtitle: "当前空间下所有智能体已接入的 IM 渠道，可快速启停或跳转到对应智能体",
+    subtitle:
+      "当前空间下所有智能体已接入的 IM 渠道，可快速启停或跳转到对应智能体",
     totalCount: "共 {count} 个",
     empty: "当前空间还没有配置 IM 机器人",
     loadFailed: "加载 IM 机器人列表失败",
@@ -4804,7 +4983,8 @@ export default {
   },
   tenantMember: {
     title: "成员管理",
-    sectionDescription: "邀请伙伴加入当前空间并分配角色。只有 Owner 可以新增或移除成员。",
+    sectionDescription:
+      "邀请伙伴加入当前空间并分配角色。只有 Owner 可以新增或移除成员。",
     learnRbacGuide: "了解 RBAC",
     totalCount: "共 {n} 位成员",
     listTitle: "空间成员",
@@ -4850,14 +5030,16 @@ export default {
     remove: {
       button: "移除",
       confirmTitle: "确认移除？",
-      confirmBody: "确定要将 {name} 从当前空间中移除吗？该用户会立即失去访问权限。",
+      confirmBody:
+        "确定要将 {name} 从当前空间中移除吗？该用户会立即失去访问权限。",
       confirm: "移除",
       success: "已移除成员",
     },
     leave: {
       button: "退出空间",
       confirmTitle: "确认退出当前空间？",
-      confirmBody: "退出后您将无法访问当前空间内的所有知识库和智能体。后续可被再次邀请加入。",
+      confirmBody:
+        "退出后您将无法访问当前空间内的所有知识库和智能体。后续可被再次邀请加入。",
       confirm: "退出",
       success: "已退出当前空间",
     },
@@ -4870,7 +5052,8 @@ export default {
       roleRequired: "请选择角色",
       userNotFound: "该邮箱尚未注册，请先邀请对方注册账号。",
       alreadyMember: "该用户已经是当前空间的成员。",
-      lastOwner: "无法降级、移除或退出最后一位 Owner，请先把其他成员提升为 Owner。",
+      lastOwner:
+        "无法降级、移除或退出最后一位 Owner，请先把其他成员提升为 Owner。",
       notFound: "未找到对应的成员。",
       noTenant: "当前没有可操作的空间。",
       invalidRole: "角色必须是 owner / admin / contributor / viewer 之一。",
@@ -4928,8 +5111,7 @@ export default {
     inboxTooltip: "查看待接受的邀请",
     pendingSectionTitle: "待接受的邀请",
     pendingSectionCount: "{n} 条",
-    pendingSectionDesc:
-      "发出后等待对方在站内确认。{days} 天未响应将自动过期。",
+    pendingSectionDesc: "发出后等待对方在站内确认。{days} 天未响应将自动过期。",
     pendingEmpty: "暂无待接受的邀请。",
     inviteSubmit: "发送邀请",
     inviteSuccess: "邀请已发出，等待对方接受。",
@@ -4951,14 +5133,15 @@ export default {
         "生成一条多人可用的注册链接，发到群里就行；谁打开都能用自己的邮箱注册并加入当前空间。链接 {days} 天后过期，或随时可在列表中撤销。",
       generate: "生成链接",
       resultTitle: "邀请链接已生成",
-      resultBody: "复制下方链接，通过任意私密渠道发给被邀请人。链接也会保存在下方列表中，随时可以重新复制或撤销。",
-      revokeConfirm: "撤销后，所有还未注册的人都无法再使用此链接；如需重发请生成新链接。",
+      resultBody:
+        "复制下方链接，通过任意私密渠道发给被邀请人。链接也会保存在下方列表中，随时可以重新复制或撤销。",
+      revokeConfirm:
+        "撤销后，所有还未注册的人都无法再使用此链接；如需重发请生成新链接。",
     },
     revoke: {
       button: "撤销",
       confirmTitle: "确认撤销邀请？",
-      confirmBody:
-        "撤销后，{email} 将无法再接受此邀请；如需再邀请请重新发出。",
+      confirmBody: "撤销后，{email} 将无法再接受此邀请；如需再邀请请重新发出。",
       confirm: "撤销",
       success: "邀请已撤销。",
     },
@@ -4980,7 +5163,8 @@ export default {
     },
     myInbox: {
       title: "我的邀请",
-      description: "其他空间发给您的加入邀请。接受后您将以对应角色加入对方空间。",
+      description:
+        "其他空间发给您的加入邀请。接受后您将以对应角色加入对方空间。",
       empty: "没有待处理的邀请。",
       acceptButton: "接受",
       declineButton: "拒绝",

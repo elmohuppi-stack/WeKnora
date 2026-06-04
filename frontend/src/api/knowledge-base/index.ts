@@ -11,13 +11,14 @@ export function listKnowledgeBases(params?: {
    * KBs predating the RBAC backfill (creator_id="") never match
    * mine/others — they fall out of both views by design.
    */
-  creator?: 'all' | 'mine' | 'others';
+  creator?: "all" | "mine" | "others";
 }) {
   const query = new URLSearchParams();
-  if (params?.agent_id) query.set('agent_id', params.agent_id);
-  if (params?.creator && params.creator !== 'all') query.set('creator', params.creator);
+  if (params?.agent_id) query.set("agent_id", params.agent_id);
+  if (params?.creator && params.creator !== "all")
+    query.set("creator", params.creator);
   const qs = query.toString();
-  return get(qs ? `/api/v1/knowledge-bases?${qs}` : '/api/v1/knowledge-bases');
+  return get(qs ? `/api/v1/knowledge-bases?${qs}` : "/api/v1/knowledge-bases");
 }
 
 // Read-only vector-store binding metadata enriched onto every KB
@@ -41,8 +42,8 @@ export function listKnowledgeBases(params?: {
 //                       (deleted row, registry miss, transient infra
 //                       failure). Operators recover via the global
 //                       Vector Stores settings page.
-export type VectorStoreSource = 'env' | 'user' | 'shared' | 'unavailable';
-export type VectorStoreStatus = 'available' | 'unavailable';
+export type VectorStoreSource = "env" | "user" | "shared" | "unavailable";
+export type VectorStoreStatus = "available" | "unavailable";
 
 export interface KnowledgeBaseStoreView {
   vector_store_id?: string | null;
@@ -55,7 +56,7 @@ export interface KnowledgeBaseStoreView {
 export function createKnowledgeBase(data: {
   name: string;
   description?: string;
-  type?: 'document' | 'faq';
+  type?: "document" | "faq";
   chunking_config?: any;
   embedding_model_id?: string;
   summary_model_id?: string;
@@ -80,7 +81,7 @@ export function createKnowledgeBase(data: {
   wiki_config?: {
     synthesis_model_id?: string;
     max_pages_per_ingest?: number;
-    extraction_granularity?: 'focused' | 'standard' | 'exhaustive';
+    extraction_granularity?: "focused" | "standard" | "exhaustive";
   };
   indexing_strategy?: {
     vector_enabled: boolean;
@@ -92,34 +93,44 @@ export function createKnowledgeBase(data: {
   return post(`/api/v1/knowledge-bases`, data);
 }
 
-export function getKnowledgeBaseById(id: string, options?: { agent_id?: string }) {
+export function getKnowledgeBaseById(
+  id: string,
+  options?: { agent_id?: string },
+) {
   const query = new URLSearchParams();
-  if (options?.agent_id) query.set('agent_id', options.agent_id);
+  if (options?.agent_id) query.set("agent_id", options.agent_id);
   const qs = query.toString();
-  return get(qs ? `/api/v1/knowledge-bases/${id}?${qs}` : `/api/v1/knowledge-bases/${id}`);
+  return get(
+    qs
+      ? `/api/v1/knowledge-bases/${id}?${qs}`
+      : `/api/v1/knowledge-bases/${id}`,
+  );
 }
 
-export function updateKnowledgeBase(id: string, data: {
-  name: string;
-  description?: string;
-  config?: {
-    chunking_config?: any;
-    image_processing_config?: any;
-    faq_config?: any;
-    wiki_config?: {
-      synthesis_model_id?: string;
-      max_pages_per_ingest?: number;
-      extraction_granularity?: 'focused' | 'standard' | 'exhaustive';
+export function updateKnowledgeBase(
+  id: string,
+  data: {
+    name: string;
+    description?: string;
+    config?: {
+      chunking_config?: any;
+      image_processing_config?: any;
+      faq_config?: any;
+      wiki_config?: {
+        synthesis_model_id?: string;
+        max_pages_per_ingest?: number;
+        extraction_granularity?: "focused" | "standard" | "exhaustive";
+      };
+      indexing_strategy?: {
+        vector_enabled: boolean;
+        keyword_enabled: boolean;
+        wiki_enabled: boolean;
+        graph_enabled: boolean;
+      };
     };
-    indexing_strategy?: {
-      vector_enabled: boolean;
-      keyword_enabled: boolean;
-      wiki_enabled: boolean;
-      graph_enabled: boolean;
-    };
-  }
-}) {
-  return put(`/api/v1/knowledge-bases/${id}` , data);
+  },
+) {
+  return put(`/api/v1/knowledge-bases/${id}`, data);
 }
 
 export function rebuildKBIndex(kbId: string) {
@@ -130,7 +141,10 @@ export function deleteKnowledgeBase(id: string) {
   return del(`/api/v1/knowledge-bases/${id}`);
 }
 
-export function copyKnowledgeBase(data: { source_id: string; target_id?: string }) {
+export function copyKnowledgeBase(data: {
+  source_id: string;
+  target_id?: string;
+}) {
   return post(`/api/v1/knowledge-bases/copy`, data);
 }
 
@@ -144,9 +158,9 @@ export function moveKnowledge(data: {
   knowledge_ids: string[];
   source_kb_id: string;
   target_kb_id: string;
-  mode: 'reuse_vectors' | 'reparse';
+  mode: "reuse_vectors" | "reparse";
 }) {
-  return post('/api/v1/knowledge/move', data);
+  return post("/api/v1/knowledge/move", data);
 }
 
 // 获取知识移动进度
@@ -160,23 +174,49 @@ export function togglePinKnowledgeBase(id: string) {
 
 // 知识文件 API（基于具体知识库）
 // data.tag_id: 可选，指定知识所属的分类ID
-export function uploadKnowledgeFile(kbId: string, data: { file: File; tag_id?: string; [key: string]: any } = { file: new File([], '') }, onProgress?: (progressEvent: any) => void) {
+export function uploadKnowledgeFile(
+  kbId: string,
+  data: { file: File; tag_id?: string; [key: string]: any } = {
+    file: new File([], ""),
+  },
+  onProgress?: (progressEvent: any) => void,
+) {
   const formData = new FormData();
-  Object.keys(data).forEach(key => {
+  Object.keys(data).forEach((key) => {
     if (data[key] !== undefined) formData.append(key, data[key]);
   });
-  return postUpload(`/api/v1/knowledge-bases/${kbId}/knowledge/file`, formData, onProgress);
+  return postUpload(
+    `/api/v1/knowledge-bases/${kbId}/knowledge/file`,
+    formData,
+    onProgress,
+  );
 }
 
 // 从URL创建知识
 // data.tag_id: 可选，指定知识所属的分类ID
-export function createKnowledgeFromURL(kbId: string, data: { url: string; enable_multimodel?: boolean; tag_id?: string }) {
+export function createKnowledgeFromURL(
+  kbId: string,
+  data: { url: string; enable_multimodel?: boolean; tag_id?: string },
+) {
   return post(`/api/v1/knowledge-bases/${kbId}/knowledge/url`, data);
+}
+
+// 从YouTube视频创建知识
+// data.tag_id: 可选，指定知识所属的分类ID
+// data.language: 可选，指定偏好的字幕语言（如 "de", "en"）
+export function createKnowledgeFromYouTube(
+  kbId: string,
+  data: { url: string; tag_id?: string; language?: string },
+) {
+  return post(`/api/v1/knowledge-bases/${kbId}/knowledge/youtube`, data);
 }
 
 // 手工创建知识
 // data.tag_id: 可选，指定知识所属的分类ID
-export function createManualKnowledge(kbId: string, data: { title: string; content: string; status: string; tag_id?: string }) {
+export function createManualKnowledge(
+  kbId: string,
+  data: { title: string; content: string; status: string; tag_id?: string },
+) {
   return post(`/api/v1/knowledge-bases/${kbId}/knowledge/manual`, data);
 }
 
@@ -195,27 +235,33 @@ export function listKnowledgeFiles(
   },
 ) {
   const query = new URLSearchParams();
-  query.append('page', String(params.page));
-  query.append('page_size', String(params.page_size));
-  if (params.tag_id) query.append('tag_id', params.tag_id);
-  if (params.keyword) query.append('keyword', params.keyword);
-  if (params.file_type) query.append('file_type', params.file_type);
-  if (params.parse_status) query.append('parse_status', params.parse_status);
-  if (params.source) query.append('source', params.source);
-  if (params.start_time) query.append('start_time', params.start_time);
-  if (params.end_time) query.append('end_time', params.end_time);
+  query.append("page", String(params.page));
+  query.append("page_size", String(params.page_size));
+  if (params.tag_id) query.append("tag_id", params.tag_id);
+  if (params.keyword) query.append("keyword", params.keyword);
+  if (params.file_type) query.append("file_type", params.file_type);
+  if (params.parse_status) query.append("parse_status", params.parse_status);
+  if (params.source) query.append("source", params.source);
+  if (params.start_time) query.append("start_time", params.start_time);
+  if (params.end_time) query.append("end_time", params.end_time);
   const qs = query.toString();
   return get(`/api/v1/knowledge-bases/${kbId}/knowledge?${qs}`);
 }
 
-export function getKnowledgeDetails(id: string, options?: { agent_id?: string }) {
+export function getKnowledgeDetails(
+  id: string,
+  options?: { agent_id?: string },
+) {
   const query = new URLSearchParams();
-  if (options?.agent_id) query.set('agent_id', options.agent_id);
+  if (options?.agent_id) query.set("agent_id", options.agent_id);
   const qs = query.toString();
   return get(qs ? `/api/v1/knowledge/${id}?${qs}` : `/api/v1/knowledge/${id}`);
 }
 
-export function updateManualKnowledge(id: string, data: { title: string; content: string; status: string }) {
+export function updateManualKnowledge(
+  id: string,
+  data: { title: string; content: string; status: string },
+) {
   return put(`/api/v1/knowledge/manual/${id}`, data);
 }
 
@@ -228,7 +274,7 @@ export function cancelKnowledgeParse(id: string) {
 }
 
 export function getKnowledgeSpans(id: string, attempt?: number) {
-  const qs = attempt ? `?attempt=${attempt}` : '';
+  const qs = attempt ? `?attempt=${attempt}` : "";
   return get(`/api/v1/knowledge/${id}/spans${qs}`);
 }
 
@@ -250,7 +296,11 @@ export function previewKnowledgeFile(id: string) {
 }
 
 /** @param idsQueryString - query string with ids (e.g. ids=xxx&ids=yyy) */
-export function batchQueryKnowledge(idsQueryString: string, kbId?: string, agentId?: string) {
+export function batchQueryKnowledge(
+  idsQueryString: string,
+  kbId?: string,
+  agentId?: string,
+) {
   let qs = idsQueryString;
   if (kbId) qs += `&kb_id=${encodeURIComponent(kbId)}`;
   if (agentId) qs += `&agent_id=${encodeURIComponent(agentId)}`;
@@ -268,7 +318,9 @@ export function getChunkByIdOnly(chunkId: string) {
 
 // Delete a single generated question from a chunk by question ID
 export function deleteGeneratedQuestion(chunkId: string, questionId: string) {
-  return del(`/api/v1/chunks/by-id/${chunkId}/questions`, { question_id: questionId });
+  return del(`/api/v1/chunks/by-id/${chunkId}/questions`, {
+    question_id: questionId,
+  });
 }
 
 export function listKnowledgeTags(
@@ -294,39 +346,56 @@ export function updateKnowledgeBaseTag(
   return put(`/api/v1/knowledge-bases/${kbId}/tags/${tagId}`, data);
 }
 
-export function deleteKnowledgeBaseTag(kbId: string, tagSeqId: number, params?: { force?: boolean }) {
-  const forceQuery = params?.force ? '?force=true' : '';
+export function deleteKnowledgeBaseTag(
+  kbId: string,
+  tagSeqId: number,
+  params?: { force?: boolean },
+) {
+  const forceQuery = params?.force ? "?force=true" : "";
   return del(`/api/v1/knowledge-bases/${kbId}/tags/${tagSeqId}${forceQuery}`);
 }
 
-export function updateKnowledgeTagBatch(data: { updates: Record<string, string | null> }) {
+export function updateKnowledgeTagBatch(data: {
+  updates: Record<string, string | null>;
+}) {
   return put(`/api/v1/knowledge/tags`, data);
 }
 
-export function updateFAQEntryTagBatch(kbId: string, data: { updates: Record<number, number | null> }) {
+export function updateFAQEntryTagBatch(
+  kbId: string,
+  data: { updates: Record<number, number | null> },
+) {
   return put(`/api/v1/knowledge-bases/${kbId}/faq/entries/tags`, data);
 }
 
 const buildQuery = (params?: Record<string, any>) => {
-  if (!params) return '';
+  if (!params) return "";
   const query = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return;
+    if (value === undefined || value === null || value === "") return;
     query.append(key, String(value));
   });
   const queryString = query.toString();
-  return queryString ? `?${queryString}` : '';
+  return queryString ? `?${queryString}` : "";
 };
 
 export function listFAQEntries(
   kbId: string,
-  params?: { page?: number; page_size?: number; tag_id?: number; keyword?: string },
+  params?: {
+    page?: number;
+    page_size?: number;
+    tag_id?: number;
+    keyword?: string;
+  },
 ) {
   const query = buildQuery(params);
   return get(`/api/v1/knowledge-bases/${kbId}/faq/entries${query}`);
 }
 
-export function upsertFAQEntries(kbId: string, data: { entries: any[]; mode: 'append' | 'replace' }) {
+export function upsertFAQEntries(
+  kbId: string,
+  data: { entries: any[]; mode: "append" | "replace" },
+) {
   return post(`/api/v1/knowledge-bases/${kbId}/faq/entries`, data);
 }
 
@@ -343,18 +412,21 @@ export function updateFAQEntry(kbId: string, entryId: number, data: any) {
 // 1. By entry ID: use by_id field
 // 2. By Tag: use by_tag field to apply the same update to all entries under a tag
 export interface FAQEntryFieldsUpdate {
-  is_enabled?: boolean
-  is_recommended?: boolean
-  tag_id?: number | null
+  is_enabled?: boolean;
+  is_recommended?: boolean;
+  tag_id?: number | null;
 }
 
 export interface FAQEntryFieldsBatchRequest {
-  by_id?: Record<number, FAQEntryFieldsUpdate>
-  by_tag?: Record<number, FAQEntryFieldsUpdate>
-  exclude_ids?: number[]
+  by_id?: Record<number, FAQEntryFieldsUpdate>;
+  by_tag?: Record<number, FAQEntryFieldsUpdate>;
+  exclude_ids?: number[];
 }
 
-export function updateFAQEntryFieldsBatch(kbId: string, data: FAQEntryFieldsBatchRequest) {
+export function updateFAQEntryFieldsBatch(
+  kbId: string,
+  data: FAQEntryFieldsBatchRequest,
+) {
   return put(`/api/v1/knowledge-bases/${kbId}/faq/entries/fields`, data);
 }
 
@@ -365,60 +437,68 @@ export function deleteFAQEntries(kbId: string, ids: number[]) {
 export function searchFAQEntries(
   kbId: string,
   data: {
-    query_text: string
-    vector_threshold?: number
-    match_count?: number
-  }
+    query_text: string;
+    vector_threshold?: number;
+    match_count?: number;
+  },
 ) {
   return post(`/api/v1/knowledge-bases/${kbId}/faq/search`, data);
 }
 
 // Export FAQ entries as CSV file
 export async function exportFAQEntries(kbId: string): Promise<Blob> {
-  const response = await getDown(`/api/v1/knowledge-bases/${kbId}/faq/entries/export`);
+  const response = await getDown(
+    `/api/v1/knowledge-bases/${kbId}/faq/entries/export`,
+  );
   return response as unknown as Blob;
 }
 
 // FAQ Import Progress API
 export interface FAQBlockedEntry {
-  index: number
-  standard_question: string
-  reason: string
+  index: number;
+  standard_question: string;
+  reason: string;
 }
 
 export interface FAQSuccessEntry {
-  index: number
-  seq_id: number
-  tag_id?: number
-  tag_name?: string
-  standard_question: string
+  index: number;
+  seq_id: number;
+  tag_id?: number;
+  tag_name?: string;
+  standard_question: string;
 }
 
 export interface FAQImportProgress {
-  task_id: string
-  kb_id: string
-  knowledge_id: string
-  status: 'pending' | 'processing' | 'completed' | 'failed'
-  progress: number
-  total: number
-  processed: number
-  blocked: number
-  blocked_entries?: FAQBlockedEntry[]
-  success_entries?: FAQSuccessEntry[]
-  message: string
-  error: string
-  created_at: number
-  updated_at: number
+  task_id: string;
+  kb_id: string;
+  knowledge_id: string;
+  status: "pending" | "processing" | "completed" | "failed";
+  progress: number;
+  total: number;
+  processed: number;
+  blocked: number;
+  blocked_entries?: FAQBlockedEntry[];
+  success_entries?: FAQSuccessEntry[];
+  message: string;
+  error: string;
+  created_at: number;
+  updated_at: number;
 }
 
 export function getFAQImportProgress(taskId: string) {
   return get(`/api/v1/faq/import/progress/${taskId}`);
 }
 
-export function updateFAQImportResultDisplayStatus(knowledgeBaseId: string, displayStatus: 'open' | 'close') {
-  return put(`/api/v1/knowledge-bases/${knowledgeBaseId}/faq/import/last-result/display`, {
-    display_status: displayStatus
-  });
+export function updateFAQImportResultDisplayStatus(
+  knowledgeBaseId: string,
+  displayStatus: "open" | "close",
+) {
+  return put(
+    `/api/v1/knowledge-bases/${knowledgeBaseId}/faq/import/last-result/display`,
+    {
+      display_status: displayStatus,
+    },
+  );
 }
 
 export function searchKnowledge(
@@ -426,16 +506,16 @@ export function searchKnowledge(
   offset = 0,
   limit = 20,
   fileTypes?: string[],
-  options?: { agent_id?: string }
+  options?: { agent_id?: string },
 ) {
   const query = new URLSearchParams();
-  query.set('keyword', keyword);
-  query.set('offset', String(offset));
-  query.set('limit', String(limit));
+  query.set("keyword", keyword);
+  query.set("offset", String(offset));
+  query.set("limit", String(limit));
   if (fileTypes && fileTypes.length > 0) {
-    query.set('file_types', fileTypes.join(','));
+    query.set("file_types", fileTypes.join(","));
   }
-  if (options?.agent_id) query.set('agent_id', options.agent_id);
+  if (options?.agent_id) query.set("agent_id", options.agent_id);
   return get(`/api/v1/knowledge/search?${query.toString()}`);
 }
 
@@ -444,5 +524,5 @@ export function knowledgeSemanticSearch(data: {
   knowledge_base_ids?: string[];
   knowledge_ids?: string[];
 }) {
-  return post('/api/v1/knowledge-search', data);
+  return post("/api/v1/knowledge-search", data);
 }

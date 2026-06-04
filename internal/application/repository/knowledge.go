@@ -272,6 +272,29 @@ func (r *knowledgeRepository) CheckKnowledgeExists(
 			}
 		}
 		return false, nil, nil
+	case "youtube":
+		// Deduplicate by YouTube URL
+		if params.FileHash != "" {
+			var knowledge types.Knowledge
+			err := query.Where("type = 'youtube' AND file_hash = ?", params.FileHash).First(&knowledge).Error
+			if err == nil && knowledge.ID != "" {
+				return true, &knowledge, nil
+			}
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+				return false, nil, err
+			}
+		}
+		if params.URL != "" {
+			var knowledge types.Knowledge
+			err := query.Where("type = 'youtube' AND source = ?", params.URL).First(&knowledge).Error
+			if err == nil && knowledge.ID != "" {
+				return true, &knowledge, nil
+			}
+			if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+				return false, nil, err
+			}
+		}
+		return false, nil, nil
 	}
 
 	// No valid parameters, default to not existing

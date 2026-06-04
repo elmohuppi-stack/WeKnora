@@ -83,6 +83,9 @@ var ErrDuplicateFile = errors.New("file already exists")
 // ErrDuplicateURL is returned when attempting to create a knowledge entry with a URL that already exists
 var ErrDuplicateURL = errors.New("URL already exists")
 
+// ErrDuplicateYouTube is returned when attempting to create a knowledge entry with a YouTube URL that already exists
+var ErrDuplicateYouTube = errors.New("YouTube video already exists")
+
 // CreateKnowledgeFromFile creates a knowledge entry from a local file path
 // Parameters:
 //   - knowledgeBaseID: The ID of the knowledge base
@@ -234,6 +237,45 @@ func (c *Client) CreateKnowledgeFromURL(
 			return nil, fmt.Errorf("failed to parse response: %w", err)
 		}
 		return &response.Data, ErrDuplicateURL
+	} else if err := parseResponse(resp, &response); err != nil {
+		return nil, err
+	}
+
+	return &response.Data, nil
+}
+
+// CreateKnowledgeFromYouTubeRequest contains the parameters for creating a knowledge entry from a YouTube video.
+type CreateKnowledgeFromYouTubeRequest struct {
+	// URL is the YouTube video URL (required)
+	URL string `json:"url"`
+	// TagID is the optional tag ID to associate with the knowledge entry
+	TagID string `json:"tag_id,omitempty"`
+	// Title is the optional title override for the knowledge entry
+	Title string `json:"title,omitempty"`
+	// Language is the optional preferred transcript language (e.g. "de", "en")
+	Language string `json:"language,omitempty"`
+}
+
+// CreateKnowledgeFromYouTube creates a knowledge entry from a YouTube video URL.
+// It fetches the video transcript and metadata automatically.
+func (c *Client) CreateKnowledgeFromYouTube(
+	ctx context.Context,
+	knowledgeBaseID string,
+	req CreateKnowledgeFromYouTubeRequest,
+) (*Knowledge, error) {
+	path := fmt.Sprintf("/api/v1/knowledge-bases/%s/knowledge/youtube", knowledgeBaseID)
+
+	resp, err := c.doRequest(ctx, http.MethodPost, path, req, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var response KnowledgeResponse
+	if resp.StatusCode == http.StatusConflict {
+		if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+			return nil, fmt.Errorf("failed to parse response: %w", err)
+		}
+		return &response.Data, ErrDuplicateYouTube
 	} else if err := parseResponse(resp, &response); err != nil {
 		return nil, err
 	}

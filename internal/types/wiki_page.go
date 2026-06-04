@@ -28,6 +28,10 @@ const (
 	// NOT auto-created by ingest — Agent creates these via wiki_write_page tool
 	// when the user asks to compare entities, concepts, or approaches.
 	WikiPageTypeComparison = "comparison"
+	// WikiPageTypeYouTubeTranscript represents a YouTube transcript wiki article.
+	// Created during YouTube video processing — the raw transcript is rewritten
+	// into a well-structured, readable wiki article with sections and headings.
+	WikiPageTypeYouTubeTranscript = "youtube_transcript"
 )
 
 // WikiPageStatus constants

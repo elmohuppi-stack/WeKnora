@@ -51,6 +51,14 @@ type KnowledgeService interface {
 		payload *types.ManualKnowledgePayload,
 		channel string,
 	) (*types.Knowledge, error)
+	// CreateKnowledgeFromYouTube creates knowledge from a YouTube video URL.
+	// It fetches the video transcript and metadata, then enqueues async processing.
+	CreateKnowledgeFromYouTube(
+		ctx context.Context,
+		kbID string,
+		payload *types.YouTubeKnowledgePayload,
+		channel string,
+	) (*types.Knowledge, error)
 	// GetKnowledgeByID retrieves knowledge by ID (uses tenant from context).
 	GetKnowledgeByID(ctx context.Context, id string) (*types.Knowledge, error)
 	// GetKnowledgeByIDOnly retrieves knowledge by ID without tenant filter (for permission resolution).
