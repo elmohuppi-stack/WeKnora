@@ -679,6 +679,30 @@ const isAudioFile = (fileType?: string): boolean => {
   if (!fileType) return false;
   return audioExtensions.has(fileType.toLowerCase());
 };
+
+// YouTube video ID extraction from various URL formats
+const getYouTubeVideoId = (url: string): string | null => {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+};
+
+// Computed YouTube embed URL from the knowledge source
+const youtubeEmbedUrl = computed(() => {
+  if (props.details?.type !== "youtube" || !props.details?.source) return "";
+  const videoId = getYouTubeVideoId(props.details.source);
+  if (!videoId) return "";
+  return `https://www.youtube.com/embed/${videoId}?rel=0&cc_load_policy=1`;
+});
 const audioBlobUrl = ref("");
 const audioLoading = ref(false);
 
@@ -1467,6 +1491,28 @@ const handleDetailsScroll = () => {
         </audio>
       </div>
 
+      <!-- YouTube 视频播放器（YouTube 类型时显示在内容区顶部） -->
+      <div v-if="youtubeEmbedUrl" class="youtube-player-section">
+        <div class="youtube-player-container">
+          <iframe
+            :src="youtubeEmbedUrl"
+            class="youtube-player-iframe"
+            title="YouTube video player"
+            frameborder="0"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+              web-share;
+            "
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+
       <!-- 合并视图 -->
       <div v-if="viewMode === 'merged'">
         <div v-if="!mergedContent" class="no_content">
@@ -2170,6 +2216,33 @@ const handleDetailsScroll = () => {
     color: var(--td-text-color-placeholder);
     font-size: 13px;
     padding: 4px 0;
+  }
+}
+
+// YouTube 播放器样式
+.youtube-player-section {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: var(--td-bg-color-container-hover);
+  border-radius: 6px;
+  border: 1px solid var(--td-component-border);
+
+  .youtube-player-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  .youtube-player-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
   }
 }
 

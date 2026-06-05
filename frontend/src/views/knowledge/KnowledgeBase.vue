@@ -2300,6 +2300,9 @@ const handleEnterBatchFromCard = (item: any) => {
 const onCardClick = (item: any) => {
   if (batchMode.value) {
     onCardGridCheckboxChange(item.id, !selectedIds.value.has(item.id));
+  } else if (item.type === "youtube") {
+    // Open dedicated YouTube view with video player + content
+    router.push(`/platform/knowledge-bases/${kbId.value}/youtube/${item.id}`);
   } else {
     openCardDetails(item);
   }

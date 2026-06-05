@@ -3426,11 +3426,13 @@ func (s *knowledgeService) generateYouTubeWikiArticle(
 	// Extract YouTube metadata from the knowledge record
 	title := knowledge.Title
 	channelName := ""
+	description := ""
 	duration := 0
 	if knowledge.Metadata != nil {
 		var meta types.YouTubeMetadata
 		if err := json.Unmarshal(knowledge.Metadata, &meta); err == nil {
 			channelName = meta.ChannelName
+			description = meta.Description
 			duration = meta.Duration
 		}
 	}
@@ -3444,11 +3446,12 @@ func (s *knowledgeService) generateYouTubeWikiArticle(
 	// Call the LLM with the YouTube transcript prompt
 	durationMin := float64(duration) / 60.0
 	promptData := map[string]string{
-		"Transcript": transcript,
-		"Title":      title,
-		"Channel":    channelName,
-		"Duration":   fmt.Sprintf("%.1f", durationMin),
-		"Language":   lang,
+		"Transcript":  transcript,
+		"Title":       title,
+		"Channel":     channelName,
+		"Duration":    fmt.Sprintf("%.1f", durationMin),
+		"Description": description,
+		"Language":    lang,
 	}
 
 	articleContent, err := s.generateYouTubeWikiContent(ctx, chatModel, promptData)

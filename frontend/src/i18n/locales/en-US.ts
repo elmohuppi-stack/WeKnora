@@ -198,6 +198,12 @@ export default {
       "Enter YouTube video URL, e.g., https://www.youtube.com/watch?v=...",
     youtubeUrlTip:
       "The system will automatically fetch the video transcript and metadata. Supports YouTube, YouTube Shorts, and youtu.be links.",
+    wikiArticle: "Wiki Article",
+    transcript: "Transcript",
+    videoNotAvailable: "Video not available",
+    noWikiArticle: "No wiki article generated for this video yet.",
+    documentDescription: "Description",
+    loading: "Loading...",
     typeYouTube: "YouTube",
     typeURL: "URL",
     typeManual: "Manual",

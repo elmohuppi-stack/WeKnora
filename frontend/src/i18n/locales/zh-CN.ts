@@ -189,6 +189,12 @@ export default {
       "请输入YouTube视频链接，例如：https://www.youtube.com/watch?v=...",
     youtubeUrlTip:
       "系统将自动获取视频字幕和元数据。支持YouTube、YouTube Shorts和youtu.be短链接。",
+    wikiArticle: "Wiki 文章",
+    transcript: "字幕文本",
+    videoNotAvailable: "视频不可用",
+    noWikiArticle: "该视频尚未生成 Wiki 文章。",
+    documentDescription: "描述",
+    loading: "加载中...",
     typeYouTube: "YouTube",
     typeURL: "网页",
     typeManual: "手动创建",
