@@ -1,4 +1,4 @@
-.PHONY: help build run test clean docker-build-app docker-build-docreader docker-build-frontend docker-build-all docker-run migrate-up migrate-down docker-restart docker-stop start stop logs status restart url stop-all start-all start-ollama stop-ollama build-images build-images-app build-images-docreader build-images-frontend clean-images check-env list-containers pull-images show-platform dev-start dev-stop dev-restart dev-logs dev-status dev-app dev-frontend docs install-swagger build-lite run-lite package-lite
+.PHONY: help build run test clean docker-build-app docker-build-docreader docker-build-frontend docker-build-all docker-run migrate-up migrate-down docker-restart docker-stop start stop logs status restart url stop-all start-all start-ollama stop-ollama build-images build-images-app build-images-docreader build-images-frontend clean-images check-env list-containers pull-images show-platform dev-start dev-stop dev-restart dev-logs dev-status dev-app dev-frontend docs install-swagger build-lite run-lite package-lite deploy
 
 # Show help
 help:
@@ -55,6 +55,9 @@ help:
 	@echo "  list-containers   List running containers"
 	@echo "  pull-images       Pull latest images"
 	@echo "  show-platform     Show current build platform"
+	@echo ""
+	@echo "Deployment:"
+	@echo "  deploy            Build and deploy only changed services to production"
 	@echo ""
 	@echo "Development Mode (recommended):"
 	@echo "  dev-start         Start dev infrastructure (dependencies only)"
@@ -310,6 +313,29 @@ build-lite:
 run-lite: build-lite
 	@if [ ! -f .env.lite ]; then echo "Error: .env.lite not found"; exit 1; fi
 	@set -a && . ./.env.lite && set +a && ./$(BINARY_NAME)-lite
+
+# Deploy only changed services to production via SSH.
+# Detects which files changed since the last deploy and only builds
+# the affected Docker Compose services (app, frontend, docreader).
+deploy:
+	@echo ">> Deploying to production (Hetzner)..."
+	@ssh elmarhepp "cd /var/www/weknora && \
+		echo '>> Pulling latest code...' && \
+		git pull && \
+		echo '>> Detecting changed services...' && \
+		CHANGED_FILES=\$$(git diff HEAD~1 --name-only 2>/dev/null || git diff --name-only) && \
+		SERVICES='' && \
+		if echo \"\$$CHANGED_FILES\" | grep -qE '^frontend/'; then SERVICES=\"\$$SERVICES frontend\"; fi && \
+		if echo \"\$$CHANGED_FILES\" | grep -qE '^(internal/|cmd/|go\.mod|go\.sum|docker/Dockerfile\.app)'; then SERVICES=\"\$$SERVICES app\"; fi && \
+		if echo \"\$$CHANGED_FILES\" | grep -qE '^docreader/|docker/Dockerfile\.docreader'; then SERVICES=\"\$$SERVICES docreader\"; fi && \
+		if [ -z \"\$$SERVICES\" ]; then \
+			echo '>> No changed services detected, restarting all...'; \
+			docker compose up -d --build; \
+		else \
+			echo '>> Building and restarting:' \$$SERVICES; \
+			docker compose up -d --build \$$SERVICES; \
+		fi && \
+		echo '>> Deployment complete.'"
 
 # Package Lite version into distributable tarball
 package-lite:
