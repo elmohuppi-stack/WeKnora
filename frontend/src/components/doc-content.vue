@@ -82,7 +82,12 @@ const props = defineProps([
   "parse_status",
   "kbId",
 ]);
-const emit = defineEmits(["closeDoc", "getDoc", "questionDeleted", "openWikiPage"]);
+const emit = defineEmits([
+  "closeDoc",
+  "getDoc",
+  "questionDeleted",
+  "openWikiPage",
+]);
 
 const hasTimelineSpans = ref(false);
 const timelineDrawerVisible = ref(false);
