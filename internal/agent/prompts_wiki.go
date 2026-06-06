@@ -4,7 +4,9 @@ package agent
 // These prompts are used by the wiki ingest pipeline to extract structured
 // knowledge from raw documents and build/update wiki pages.
 
-// WikiSummaryPrompt generates a summary page for a newly ingested document.
+// WikiSummaryPrompt generates a detailed wiki article for a newly ingested
+// document. Instead of a short summary, this produces a full, well-structured
+// wiki page that captures the entire document content without truncation.
 //
 // Filename and title are intentionally NOT passed to the LLM: documents
 // uploaded to WeKnora often carry filenames that say nothing about the
@@ -12,7 +14,7 @@ package agent
 // and feeding such filenames to the model invites hallucinated summaries
 // when the actual extracted content is thin. The model must rely solely on
 // the document content provided below.
-const WikiSummaryPrompt = `You are a wiki editor. Given the following document content, create a structured wiki summary page in Markdown format.
+const WikiSummaryPrompt = `You are a wiki editor. Transform the following document content into a well-structured wiki article in Markdown format.
 
 <document>
 <content>
@@ -26,15 +28,17 @@ const WikiSummaryPrompt = `You are a wiki editor. Given the following document c
 
 <instructions>
 1. The FIRST line of your output MUST be: SUMMARY: {one sentence, 15-40 words, describing what this document is about — for wiki index listing}
-2. After the SUMMARY line, write a comprehensive summary of the document in Markdown format.
-3. Include the key facts, arguments, and conclusions.
-4. Use proper heading hierarchy (## for sections, ### for subsections).
-5. **Wiki-link rule**: The available_wiki_pages list above maps slugs to display names and their aliases (format: "[[slug]] = display name (Aliases: a, b)"). Whenever you mention a name or alias that matches a listed entry, you MUST write it as [[slug|display name]] (e.g. [[entity/zhong-guo|中国]]), NOT as bold (**name**) or bare [[slug]]. Use the EXACT slugs provided — do NOT invent new slugs.
-6. **Image rule**: If the document contains <images> tags with <image> elements, you SHOULD include the relevant images in your summary using the Markdown syntax: ![caption](url). Place the images where they are contextually relevant to the text.
-7. At the end, include a "## Key Takeaways" section with bullet points.
-8. Write in {{.Language}}.
-9. Keep the summary concise but thorough (500-1500 words depending on document length).
-10. **Empty content rule**: If the <content> block above is empty, contains only image references with no extracted text, or otherwise carries no substantive information, output exactly: "SUMMARY: No textual content was extractable from this document." followed by a brief note explaining that the document could not be summarised. Do NOT invent a topic, do NOT guess from any other clue.
+2. After the SUMMARY line, write a **full wiki article** based on the document content. Restructure the material into a clear, readable format with proper headings and sections.
+3. Structure the article like a proper Wikipedia entry:
+   - Start with a lead section (2-3 paragraphs giving an overview of the topic)
+   - Use ## headings for main sections and ### for subsections
+   - Organize the content logically
+4. **Wiki-link rule**: The available_wiki_pages list above maps slugs to display names and their aliases (format: "[[slug]] = display name (Aliases: a, b)"). Whenever you mention a name or alias that matches a listed entry, you MUST write it as [[slug|display name]] (e.g. [[entity/zhong-guo|中国]]), NOT as bold (**name**) or bare [[slug]]. Use the EXACT slugs provided — do NOT invent new slugs.
+5. **Image rule**: If the document contains <images> tags with <image> elements, you SHOULD include the relevant images in your article using the Markdown syntax: ![caption](url). Place the images where they are contextually relevant to the text.
+6. At the end, include a "## Key Takeaways" section with bullet points summarizing the most important points.
+7. Write in {{.Language}}.
+8. **No truncation**: Do NOT shorten, summarize, omit, or condense any content. Include ALL arguments, facts, details, examples, quotes, and data from the original document. Your job is to restructure the content for readability, not to reduce it. A 4-hour video transcript should result in an article as long as the transcript itself.
+9. **Empty content rule**: If the <content> block above is empty, contains only image references with no extracted text, or otherwise carries no substantive information, output exactly: "SUMMARY: No textual content was extractable from this document." followed by a brief note explaining that the document could not be turned into an article. Do NOT invent a topic, do NOT guess from any other clue.
 </instructions>
 
 Output the SUMMARY line first, then the Markdown content. Do not include any other preamble.`

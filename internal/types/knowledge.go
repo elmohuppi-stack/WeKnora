@@ -306,6 +306,20 @@ func (k *Knowledge) ManualMetadata() (*ManualKnowledgeMetadata, error) {
 	return &metadata, nil
 }
 
+// YouTubeMetadata parses and returns YouTube metadata (title, channel, description, etc.)
+// from the Knowledge.Metadata JSON field. Returns nil, nil when the knowledge is not
+// a YouTube type or has no metadata.
+func (k *Knowledge) YouTubeMetadata() (*YouTubeMetadata, error) {
+	if len(k.Metadata) == 0 || k.Type != KnowledgeTypeYouTube {
+		return nil, nil
+	}
+	var metadata YouTubeMetadata
+	if err := json.Unmarshal(k.Metadata, &metadata); err != nil {
+		return nil, err
+	}
+	return &metadata, nil
+}
+
 // SetManualMetadata sets manual knowledge metadata onto the knowledge instance.
 func (k *Knowledge) SetManualMetadata(meta *ManualKnowledgeMetadata) error {
 	if meta == nil {

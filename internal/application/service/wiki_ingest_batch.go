@@ -806,6 +806,31 @@ func (s *wikiIngestService) mapOneDocument(
 
 	content := reconstructEnrichedContent(ctx, s.chunkRepo, payload.TenantID, chunks)
 	rawRuneCount := len([]rune(content))
+
+	// For YouTube documents: prepend the video title and description so the LLM
+	// can use the author-provided metadata (channel name, video description) in
+	// addition to the transcript text. YouTube titles are reliable (unlike
+	// uploaded filenames), and descriptions often contain speaker names, context,
+	// and links that improve wiki article quality.
+	if kn, err := s.knowledgeSvc.GetKnowledgeByIDOnly(ctx, knowledgeID); err == nil && kn != nil && kn.Type == types.KnowledgeTypeYouTube {
+		if ytMeta, err := kn.YouTubeMetadata(); err == nil && ytMeta != nil {
+			var prefix strings.Builder
+			if kn.Title != "" {
+				prefix.WriteString(fmt.Sprintf("# %s\n\n", kn.Title))
+			}
+			if ytMeta.ChannelName != "" {
+				prefix.WriteString(fmt.Sprintf("**Channel**: %s\n\n", ytMeta.ChannelName))
+			}
+			if ytMeta.Description != "" {
+				prefix.WriteString(fmt.Sprintf("**Description**: %s\n\n", ytMeta.Description))
+			}
+			if prefix.Len() > 0 {
+				content = prefix.String() + content
+				logger.Infof(ctx, "wiki ingest: prepended YouTube metadata (%d bytes) to doc %s", prefix.Len(), knowledgeID)
+			}
+		}
+	}
+
 	if len([]rune(content)) > maxContentForWiki {
 		content = string([]rune(content)[:maxContentForWiki])
 	}
