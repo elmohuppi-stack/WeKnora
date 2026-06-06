@@ -1310,6 +1310,13 @@ const openSourceDoc = (knowledgeId: string) => {
   getCardDetails({ id: knowledgeId });
 };
 
+// Navigate to wiki summary page from document detail
+const handleOpenWikiPage = (payload: { kbId: string; knowledgeId: string }) => {
+  const slug = `summary/${payload.knowledgeId}`;
+  router.replace({ query: { ...route.query, tab: "wiki", slug } });
+  activeKbTab.value = "wiki";
+};
+
 // 悬停知识卡片时跟随鼠标显示详情气泡
 const hoveredCardItem = ref<KnowledgeCard | null>(null);
 const cardPopoverPos = ref({ x: 0, y: 0 });
@@ -3902,8 +3909,10 @@ async function createNewSession(value: string): Promise<void> {
         :visible="isCardDetails"
         :details="details"
         :canEditKB="canEdit"
+        :kb-id="kbId"
         @closeDoc="closeDoc"
         @getDoc="getDoc"
+        @open-wiki-page="handleOpenWikiPage"
       >
       </DocContent>
     </div>

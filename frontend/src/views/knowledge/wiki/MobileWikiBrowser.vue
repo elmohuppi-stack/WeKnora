@@ -134,9 +134,11 @@
             <div
               v-for="ref in selectedPage.source_refs"
               :key="ref"
-              class="source-item"
+              class="source-item source-item--clickable"
+              @click="emit('open-source-doc', ref)"
             >
-              {{ ref }}
+              <t-icon name="file" size="14px" />
+              <span>{{ ref }}</span>
             </div>
           </div>
         </div>
@@ -658,5 +660,19 @@ onMounted(() => {
   font-size: 12px;
   color: var(--td-text-color-secondary, #999);
   padding: 2px 0;
+}
+
+.source-item--clickable {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  color: var(--td-brand-color, #0052d9);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:active {
+    opacity: 0.7;
+  }
 }
 </style>

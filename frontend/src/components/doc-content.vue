@@ -80,8 +80,9 @@ const props = defineProps([
   "sourceInfo",
   "canEditKB",
   "parse_status",
+  "kbId",
 ]);
-const emit = defineEmits(["closeDoc", "getDoc", "questionDeleted"]);
+const emit = defineEmits(["closeDoc", "getDoc", "questionDeleted", "openWikiPage"]);
 
 const hasTimelineSpans = ref(false);
 const timelineDrawerVisible = ref(false);
@@ -129,6 +130,15 @@ function openTimeline() {
 
 function closeTimeline() {
   timelineDrawerVisible.value = false;
+}
+
+function navigateToWikiPage() {
+  if (props.kbId && props.details?.id) {
+    emit("openWikiPage", {
+      kbId: props.kbId,
+      knowledgeId: props.details.id,
+    });
+  }
 }
 
 const TRACE_DRAWER_WIDTH_KEY = "weknora-trace-drawer-width";
@@ -1260,6 +1270,20 @@ const handleDetailsScroll = () => {
               <t-icon name="chart-bar" size="14px" />
             </template>
             {{ $t("knowledgeStages.traceBtn") }}
+          </t-button>
+          <t-button
+            v-if="props.kbId && details.id"
+            class="wiki-link-btn"
+            size="small"
+            variant="outline"
+            theme="primary"
+            :title="$t('knowledgeEditor.wikiBrowser.openWikiPage')"
+            @click="navigateToWikiPage"
+          >
+            <template #icon>
+              <t-icon name="book" size="14px" />
+            </template>
+            Wiki
           </t-button>
         </div>
       </template>
