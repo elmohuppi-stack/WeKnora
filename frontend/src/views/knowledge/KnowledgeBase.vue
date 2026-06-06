@@ -1923,13 +1923,16 @@ const handleMobileUploadFile = () => {
   uploadSheetVisible.value = false;
   nextTick(() => uploadInputRef.value?.click());
 };
-const handleMobileImportURL = () => {
+const handleMobileSubmitUrl = (url: string) => {
   uploadSheetVisible.value = false;
-  nextTick(() => handleURLImportClick());
+  urlInputValue.value = url;
+  nextTick(() => handleURLImportConfirm());
 };
-const handleMobileImportYouTube = () => {
+
+const handleMobileSubmitYoutubeUrl = (url: string) => {
   uploadSheetVisible.value = false;
-  nextTick(() => handleYouTubeImportClick());
+  youtubeUrlValue.value = url;
+  nextTick(() => handleYouTubeImportConfirm());
 };
 
 // URL 导入相关
@@ -3899,8 +3902,8 @@ async function createNewSession(value: string): Promise<void> {
         :visible="uploadSheetVisible"
         @close="uploadSheetVisible = false"
         @upload-file="handleMobileUploadFile"
-        @import-url="handleMobileImportURL"
-        @import-youtube="handleMobileImportYouTube"
+        @submit-url="handleMobileSubmitUrl"
+        @submit-youtube-url="handleMobileSubmitYoutubeUrl"
       />
 
       <!-- DocContent drawer (shared by documents tab and wiki source refs) -->

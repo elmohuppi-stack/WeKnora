@@ -4,13 +4,33 @@
       <div
         v-if="visible"
         class="upload-sheet-overlay"
-        @click.self="emit('close')"
+        @click.self="goBackOrClose"
       >
         <div class="upload-sheet-panel">
+          <!-- Header -->
           <div class="upload-sheet-header">
-            <span class="upload-sheet-title">{{
-              t("knowledgeBase.addKnowledge") || "Wissen hinzufügen"
-            }}</span>
+            <div class="upload-sheet-header-left">
+              <div
+                v-if="page !== 'menu'"
+                class="upload-sheet-back"
+                @click="page = 'menu'"
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="19" y1="12" x2="5" y2="12" />
+                  <polyline points="12 19 5 12 12 5" />
+                </svg>
+              </div>
+            </div>
+            <span class="upload-sheet-title">{{ pageTitle }}</span>
             <div class="upload-sheet-close" @click="emit('close')">
               <svg
                 width="20"
@@ -27,7 +47,9 @@
               </svg>
             </div>
           </div>
-          <div class="upload-sheet-items">
+
+          <!-- Menu page -->
+          <div v-if="page === 'menu'" class="upload-sheet-items">
             <div class="upload-sheet-item" @click="emit('uploadFile')">
               <div class="upload-sheet-item-icon upload-icon-file">
                 <svg
@@ -57,7 +79,7 @@
                 >
               </div>
             </div>
-            <div class="upload-sheet-item" @click="emit('importURL')">
+            <div class="upload-sheet-item" @click="page = 'url'">
               <div class="upload-sheet-item-icon upload-icon-url">
                 <svg
                   width="24"
@@ -87,7 +109,7 @@
                 }}</span>
               </div>
             </div>
-            <div class="upload-sheet-item" @click="emit('importYouTube')">
+            <div class="upload-sheet-item" @click="page = 'youtube'">
               <div class="upload-sheet-item-icon upload-icon-youtube">
                 <svg
                   width="24"
@@ -116,6 +138,70 @@
               </div>
             </div>
           </div>
+
+          <!-- URL input page -->
+          <div v-if="page === 'url'" class="upload-sheet-youtube-form">
+            <div class="youtube-input-label">
+              {{ t("knowledgeBase.urlLabel") || "URL" }}
+            </div>
+            <input
+              ref="urlInputRef"
+              v-model="urlValue"
+              class="youtube-url-input"
+              :placeholder="
+                t('knowledgeBase.urlPlaceholder') || 'https://example.com'
+              "
+              type="url"
+              inputmode="url"
+              autofocus
+              @keydown.enter="submitUrl"
+            />
+            <div class="youtube-input-tip">
+              {{
+                t("knowledgeBase.urlTip") || "Webseite als Quelle hinzufügen"
+              }}
+            </div>
+            <button
+              class="youtube-submit-btn"
+              :disabled="!urlValue.trim()"
+              @click="submitUrl"
+            >
+              {{ t("knowledgeBase.import") || "Importieren" }}
+            </button>
+          </div>
+
+          <!-- YouTube URL input page -->
+          <div v-if="page === 'youtube'" class="upload-sheet-youtube-form">
+            <div class="youtube-input-label">
+              {{ t("knowledgeBase.youtubeUrlLabel") || "YouTube-URL" }}
+            </div>
+            <input
+              ref="youtubeInputRef"
+              v-model="youtubeUrl"
+              class="youtube-url-input"
+              :placeholder="
+                t('knowledgeBase.youtubeUrlPlaceholder') ||
+                'https://youtube.com/watch?v=...'
+              "
+              type="url"
+              inputmode="url"
+              autofocus
+              @keydown.enter="submitYoutubeUrl"
+            />
+            <div class="youtube-input-tip">
+              {{
+                t("knowledgeBase.youtubeUrlTip") ||
+                "Transkript automatisch erfassen"
+              }}
+            </div>
+            <button
+              class="youtube-submit-btn"
+              :disabled="!youtubeUrl.trim()"
+              @click="submitYoutubeUrl"
+            >
+              {{ t("knowledgeBase.import") || "Importieren" }}
+            </button>
+          </div>
         </div>
       </div>
     </transition>
@@ -123,20 +209,69 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, nextTick } from "vue";
 import { useI18n } from "vue-i18n";
 
-defineProps<{
+const props = defineProps<{
   visible: boolean;
 }>();
 
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "uploadFile"): void;
-  (e: "importURL"): void;
-  (e: "importYouTube"): void;
+  (e: "submitUrl", url: string): void;
+  (e: "submitYoutubeUrl", url: string): void;
 }>();
 
 const { t } = useI18n();
+
+const page = ref<"menu" | "url" | "youtube">("menu");
+const youtubeUrl = ref("");
+const urlValue = ref("");
+const youtubeInputRef = ref<HTMLInputElement | null>(null);
+const urlInputRef = ref<HTMLInputElement | null>(null);
+
+const pageTitle = computed(() => {
+  if (page.value === "youtube") {
+    return t("knowledgeBase.importYouTube") || "YouTube importieren";
+  }
+  if (page.value === "url") {
+    return t("knowledgeBase.importFromURL") || "URL importieren";
+  }
+  return t("knowledgeBase.addKnowledge") || "Wissen hinzufügen";
+});
+
+// Reset to menu whenever the sheet opens
+watch(
+  () => props.visible,
+  (val) => {
+    if (val) {
+      page.value = "menu";
+      youtubeUrl.value = "";
+      urlValue.value = "";
+    }
+  },
+);
+
+const goBackOrClose = () => {
+  if (page.value !== "menu") {
+    page.value = "menu";
+  } else {
+    emit("close");
+  }
+};
+
+const submitUrl = () => {
+  const u = urlValue.value.trim();
+  if (!u) return;
+  emit("submitUrl", u);
+};
+
+const submitYoutubeUrl = () => {
+  const url = youtubeUrl.value.trim();
+  if (!url) return;
+  emit("submitYoutubeUrl", url);
+};
 </script>
 
 <style scoped lang="less">
@@ -273,6 +408,86 @@ const { t } = useI18n();
 
   .upload-sheet-panel {
     transform: translateY(100%);
+  }
+}
+
+/* YouTube URL input page */
+.upload-sheet-youtube-form {
+  padding: 20px;
+}
+
+.youtube-input-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--td-text-color-primary, #333);
+  margin-bottom: 8px;
+}
+
+.youtube-url-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  font-size: 15px;
+  border: 1px solid var(--td-border-level-2-color, #ddd);
+  border-radius: 8px;
+  outline: none;
+  background: var(--td-bg-color-secondarycontainer, #f5f5f5);
+  color: var(--td-text-color-primary, #333);
+  box-sizing: border-box;
+  -webkit-appearance: none;
+
+  &:focus {
+    border-color: var(--td-brand-color, #0052d9);
+    background: var(--td-bg-color-container, #fff);
+  }
+
+  &::placeholder {
+    color: var(--td-text-color-placeholder, #bbb);
+  }
+}
+
+.youtube-input-tip {
+  font-size: 12px;
+  color: var(--td-text-color-secondary, #999);
+  margin-top: 6px;
+  margin-bottom: 16px;
+}
+
+.youtube-submit-btn {
+  width: 100%;
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  background: var(--td-brand-color, #0052d9);
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &:active:not(:disabled) {
+    opacity: 0.85;
+  }
+}
+
+/* Back button */
+.upload-sheet-header-left {
+  min-width: 28px;
+}
+
+.upload-sheet-back {
+  cursor: pointer;
+  padding: 4px;
+  color: var(--td-text-color-secondary, #999);
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    opacity: 0.6;
   }
 }
 </style>
