@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import { formatFileSize, getFileIcon } from '@/utils/files';
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { formatFileSize, getFileIcon } from "@/utils/files";
 
 interface Tag {
   id: string;
@@ -34,10 +34,14 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'open', item: KnowledgeItem): void;
-  (e: 'toggle-row', id: string, checked: boolean, shiftKey: boolean): void;
-  (e: 'toggle-all', checked: boolean): void;
-  (e: 'action', action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'delete', item: KnowledgeItem): void;
+  (e: "open", item: KnowledgeItem): void;
+  (e: "toggle-row", id: string, checked: boolean, shiftKey: boolean): void;
+  (e: "toggle-all", checked: boolean): void;
+  (
+    e: "action",
+    action: "edit" | "reparse" | "cancel-parse" | "move" | "delete",
+    item: KnowledgeItem,
+  ): void;
 }>();
 
 const { t } = useI18n();
@@ -48,46 +52,66 @@ const tagMap = computed(() => {
   return map;
 });
 const getTagName = (tagId?: string | number) => {
-  if (!tagId && tagId !== 0) return '';
-  return tagMap.value[String(tagId)]?.name || '';
+  if (!tagId && tagId !== 0) return "";
+  return tagMap.value[String(tagId)]?.name || "";
 };
 
 const formatTime = (time?: string) => {
-  if (!time) return '--';
+  if (!time) return "--";
   const d = new Date(time);
-  if (Number.isNaN(d.getTime())) return '--';
+  if (Number.isNaN(d.getTime())) return "--";
   const yy = String(d.getFullYear()).slice(2);
-  const MM = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
+  const MM = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
   return `${yy}-${MM}-${dd} ${hh}:${mm}`;
 };
 
-const getSourceInfo = (item: KnowledgeItem): { icon: string; label: string } => {
+const getSourceInfo = (
+  item: KnowledgeItem,
+): { icon: string; label: string } => {
   const ch = item.channel;
-  if (ch === 'feishu') return { icon: 'cloud-download', label: t('knowledgeBase.channelFeishu') };
-  if (ch === 'notion') return { icon: 'cloud-download', label: t('knowledgeBase.channelNotion') };
-  if (ch === 'yuque') return { icon: 'cloud-download', label: t('knowledgeBase.channelYuque') };
-  if (ch === 'wechat') return { icon: 'cloud-download', label: t('knowledgeBase.channelWechat') };
-  if (ch === 'wecom') return { icon: 'cloud-download', label: t('knowledgeBase.channelWecom') };
-  if (ch === 'dingtalk') return { icon: 'cloud-download', label: t('knowledgeBase.channelDingtalk') };
-  if (ch === 'slack') return { icon: 'cloud-download', label: t('knowledgeBase.channelSlack') };
-  if (ch === 'im') return { icon: 'cloud-download', label: t('knowledgeBase.channelIm') };
-  if (item.type === 'url') return { icon: 'link', label: t('knowledgeBase.channelUrl') };
-  if (item.type === 'manual') return { icon: 'edit', label: t('knowledgeBase.channelManual') };
-  return { icon: 'upload', label: t('knowledgeBase.channelUpload') };
+  if (ch === "feishu")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelFeishu") };
+  if (ch === "notion")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelNotion") };
+  if (ch === "yuque")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelYuque") };
+  if (ch === "wechat")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelWechat") };
+  if (ch === "wecom")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelWecom") };
+  if (ch === "dingtalk")
+    return {
+      icon: "cloud-download",
+      label: t("knowledgeBase.channelDingtalk"),
+    };
+  if (ch === "slack")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelSlack") };
+  if (ch === "im")
+    return { icon: "cloud-download", label: t("knowledgeBase.channelIm") };
+  if (item.type === "url")
+    return { icon: "link", label: t("knowledgeBase.channelUrl") };
+  if (item.type === "manual")
+    return { icon: "edit", label: t("knowledgeBase.channelManual") };
+  return { icon: "upload", label: t("knowledgeBase.channelUpload") };
 };
 
 interface StatusInfo {
   label: string;
-  theme: 'success' | 'warning' | 'danger' | 'primary' | 'default';
+  theme: "success" | "warning" | "danger" | "primary" | "default";
   icon?: string;
   spin?: boolean;
 }
 const computeStatus = (item: KnowledgeItem): StatusInfo => {
-  if (item.parse_status === 'pending' || item.parse_status === 'processing') {
-    return { label: t('knowledgeBase.statusProcessing'), theme: 'primary', icon: 'loading', spin: true };
+  if (item.parse_status === "pending" || item.parse_status === "processing") {
+    return {
+      label: t("knowledgeBase.statusProcessing"),
+      theme: "primary",
+      icon: "loading",
+      spin: true,
+    };
   }
   // finalizing = primary parse done, enrichment subtasks still running.
   // While in this phase, prefer the specific "summary generating" copy
@@ -95,34 +119,60 @@ const computeStatus = (item: KnowledgeItem): StatusInfo => {
   // where this label was tied to completed+summary_pending). Otherwise
   // fall back to the generic "finalizing" label — covers question gen
   // and graph extract, which the user historically had no visibility on.
-  if (item.parse_status === 'finalizing') {
-    if (item.summary_status === 'pending' || item.summary_status === 'processing') {
-      return { label: t('knowledgeBase.generatingSummary'), theme: 'primary', icon: 'loading', spin: true };
+  if (item.parse_status === "finalizing") {
+    if (
+      item.summary_status === "pending" ||
+      item.summary_status === "processing"
+    ) {
+      return {
+        label: t("knowledgeBase.generatingSummary"),
+        theme: "primary",
+        icon: "loading",
+        spin: true,
+      };
     }
-    return { label: t('knowledgeBase.statusFinalizing'), theme: 'primary', icon: 'loading', spin: true };
+    return {
+      label: t("knowledgeBase.statusFinalizing"),
+      theme: "primary",
+      icon: "loading",
+      spin: true,
+    };
   }
-  if (item.parse_status === 'failed') {
-    return { label: t('knowledgeBase.statusFailed'), theme: 'danger', icon: 'close-circle' };
+  if (item.parse_status === "failed") {
+    return {
+      label: t("knowledgeBase.statusFailed"),
+      theme: "danger",
+      icon: "close-circle",
+    };
   }
-  if (item.parse_status === 'cancelled') {
-    return { label: t('knowledgeBase.statusCancelled'), theme: 'warning', icon: 'close-circle' };
+  if (item.parse_status === "cancelled") {
+    return {
+      label: t("knowledgeBase.statusCancelled"),
+      theme: "warning",
+      icon: "close-circle",
+    };
   }
-  if (item.parse_status === 'draft') {
-    return { label: t('knowledgeBase.statusDraft'), theme: 'warning' };
+  if (item.parse_status === "draft") {
+    return { label: t("knowledgeBase.statusDraft"), theme: "warning" };
   }
   // Legacy completed+summary_pending path: kept as a defensive fallback
   // for rows that bypassed finalizing (no enrichment configured, or
   // upgraded mid-flight from a pre-finalizing build).
   if (
-    item.parse_status === 'completed' &&
-    (item.summary_status === 'pending' || item.summary_status === 'processing')
+    item.parse_status === "completed" &&
+    (item.summary_status === "pending" || item.summary_status === "processing")
   ) {
-    return { label: t('knowledgeBase.generatingSummary'), theme: 'primary', icon: 'loading', spin: true };
+    return {
+      label: t("knowledgeBase.generatingSummary"),
+      theme: "primary",
+      icon: "loading",
+      spin: true,
+    };
   }
-  if (item.parse_status === 'completed') {
-    return { label: t('knowledgeBase.statusCompleted'), theme: 'success' };
+  if (item.parse_status === "completed") {
+    return { label: t("knowledgeBase.statusCompleted"), theme: "success" };
   }
-  return { label: '--', theme: 'default' };
+  return { label: "--", theme: "default" };
 };
 
 const statusByRow = computed(() => {
@@ -132,19 +182,28 @@ const statusByRow = computed(() => {
 });
 
 const allSelected = computed(() => {
-  return props.items.length > 0 && props.items.every(i => props.selectedIds.has(i.id));
+  return (
+    props.items.length > 0 &&
+    props.items.every((i) => props.selectedIds.has(i.id))
+  );
 });
 const someSelected = computed(() => {
-  return props.items.some(i => props.selectedIds.has(i.id)) && !allSelected.value;
+  return (
+    props.items.some((i) => props.selectedIds.has(i.id)) && !allSelected.value
+  );
 });
 
 const onHeaderCheckboxChange = (checked: boolean) => {
-  emit('toggle-all', checked);
+  emit("toggle-all", checked);
 };
 
-const onRowCheckboxChange = (item: KnowledgeItem, checked: boolean, ctx?: { e?: Event }) => {
+const onRowCheckboxChange = (
+  item: KnowledgeItem,
+  checked: boolean,
+  ctx?: { e?: Event },
+) => {
   const me = ctx?.e as MouseEvent | undefined;
-  emit('toggle-row', item.id, checked, !!me?.shiftKey);
+  emit("toggle-row", item.id, checked, !!me?.shiftKey);
 };
 
 const moreOpen = ref<string | null>(null);
@@ -157,7 +216,8 @@ const stickySentinel = ref<HTMLElement | null>(null);
 const headerStuck = ref(false);
 let stickyObserver: IntersectionObserver | null = null;
 onMounted(() => {
-  if (!stickySentinel.value || typeof IntersectionObserver === 'undefined') return;
+  if (!stickySentinel.value || typeof IntersectionObserver === "undefined")
+    return;
   stickyObserver = new IntersectionObserver(
     (entries) => {
       headerStuck.value = !entries[0].isIntersecting;
@@ -174,22 +234,36 @@ onBeforeUnmount(() => {
 // Cancellable parse statuses mirror the backend CancelKnowledgeParse
 // gate: pending / processing / finalizing all surface the stop entry,
 // while completed / failed / cancelled / deleting hide it.
-const CANCELABLE_PARSE_STATUSES = new Set(['pending', 'processing', 'finalizing']);
+const CANCELABLE_PARSE_STATUSES = new Set([
+  "pending",
+  "processing",
+  "finalizing",
+]);
 const canCancelParse = (item: KnowledgeItem) =>
-  CANCELABLE_PARSE_STATUSES.has(String(item.parse_status ?? ''));
+  CANCELABLE_PARSE_STATUSES.has(String(item.parse_status ?? ""));
 
-const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'delete', item: KnowledgeItem) => {
+const handleAction = (
+  action: "edit" | "reparse" | "cancel-parse" | "move" | "delete",
+  item: KnowledgeItem,
+) => {
   moreOpen.value = null;
   item.isMore = false;
-  emit('action', action, item);
+  emit("action", action, item);
 };
-
 </script>
 
 <template>
   <div class="doc-list-view" :class="{ 'is-loading': loading }">
-    <div ref="stickySentinel" class="doc-list-sticky-sentinel" aria-hidden="true"></div>
-    <div class="doc-list-header" :class="{ 'is-stuck': headerStuck }" role="row">
+    <div
+      ref="stickySentinel"
+      class="doc-list-sticky-sentinel"
+      aria-hidden="true"
+    ></div>
+    <div
+      class="doc-list-header"
+      :class="{ 'is-stuck': headerStuck }"
+      role="row"
+    >
       <div class="cell cell-check" role="columnheader" @click.stop>
         <t-checkbox
           class="doc-list-check"
@@ -201,12 +275,24 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
           @change="onHeaderCheckboxChange"
         />
       </div>
-      <div class="cell cell-name" role="columnheader">{{ t('knowledgeBase.columnName') }}</div>
-      <div class="cell cell-tag" role="columnheader">{{ t('knowledgeBase.columnTag') }}</div>
-      <div class="cell cell-source" role="columnheader">{{ t('knowledgeBase.columnSource') }}</div>
-      <div class="cell cell-size" role="columnheader">{{ t('knowledgeBase.columnSize') }}</div>
-      <div class="cell cell-status" role="columnheader">{{ t('knowledgeBase.columnStatus') }}</div>
-      <div class="cell cell-time" role="columnheader">{{ t('knowledgeBase.columnUpdatedAt') }}</div>
+      <div class="cell cell-name" role="columnheader">
+        {{ t("knowledgeBase.columnName") }}
+      </div>
+      <div class="cell cell-tag" role="columnheader">
+        {{ t("knowledgeBase.columnTag") }}
+      </div>
+      <div class="cell cell-source" role="columnheader">
+        {{ t("knowledgeBase.columnSource") }}
+      </div>
+      <div class="cell cell-size" role="columnheader">
+        {{ t("knowledgeBase.columnSize") }}
+      </div>
+      <div class="cell cell-status" role="columnheader">
+        {{ t("knowledgeBase.columnStatus") }}
+      </div>
+      <div class="cell cell-time" role="columnheader">
+        {{ t("knowledgeBase.columnUpdatedAt") }}
+      </div>
       <div class="cell cell-actions" role="columnheader" v-if="canEdit"></div>
     </div>
 
@@ -215,7 +301,10 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
         v-for="item in items"
         :key="item.id"
         class="doc-list-row"
-        :class="{ selected: selectedIds.has(item.id), 'menu-open': moreOpen === item.id }"
+        :class="{
+          selected: selectedIds.has(item.id),
+          'menu-open': moreOpen === item.id,
+        }"
         role="row"
         @click="emit('open', item)"
       >
@@ -234,18 +323,25 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
             <t-icon :name="getFileIcon(item)" />
           </span>
           <div class="row-file-text">
-            <span class="row-file-name" :title="item.file_name">{{ item.file_name }}</span>
+            <span class="row-file-name" :title="item.file_name">{{
+              item.file_name
+            }}</span>
             <span
               v-if="item.description"
               class="row-file-desc"
               :title="item.description"
-            >{{ item.description }}</span>
+              >{{ item.description }}</span
+            >
           </div>
         </div>
 
-
         <div class="cell cell-tag">
-          <t-tag v-if="getTagName(item.tag_id)" size="small" variant="light-outline" class="row-tag">
+          <t-tag
+            v-if="getTagName(item.tag_id)"
+            size="small"
+            variant="light-outline"
+            class="row-tag"
+          >
             {{ getTagName(item.tag_id) }}
           </t-tag>
           <span v-else class="row-muted">--</span>
@@ -257,7 +353,9 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
         </div>
 
         <div class="cell cell-size">
-          <span class="row-mono">{{ formatFileSize(item.file_size) || '--' }}</span>
+          <span class="row-mono">{{
+            formatFileSize(item.file_size) || "--"
+          }}</span>
         </div>
 
         <div class="cell cell-status">
@@ -292,7 +390,12 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
             destroy-on-close
             :on-visible-change="(v: boolean) => onMoreVisible(item.id, v)"
           >
-            <button class="row-more-btn" :class="{ active: moreOpen === item.id }" type="button" :aria-label="t('knowledgeBase.columnActions')">
+            <button
+              class="row-more-btn"
+              :class="{ active: moreOpen === item.id }"
+              type="button"
+              :aria-label="t('knowledgeBase.columnActions')"
+            >
               <t-icon name="more" size="16px" />
             </button>
             <template #content>
@@ -303,11 +406,14 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
                   @click.stop="handleAction('edit', item)"
                 >
                   <t-icon class="icon" name="edit" />
-                  <span>{{ t('knowledgeBase.editDocument') }}</span>
+                  <span>{{ t("knowledgeBase.editDocument") }}</span>
                 </div>
-                <div class="row-menu-item" @click.stop="handleAction('reparse', item)">
+                <div
+                  class="row-menu-item"
+                  @click.stop="handleAction('reparse', item)"
+                >
                   <t-icon class="icon" name="refresh" />
-                  <span>{{ t('knowledgeBase.rebuildDocument') }}</span>
+                  <span>{{ t("knowledgeBase.rebuildDocument") }}</span>
                 </div>
                 <div
                   v-if="canCancelParse(item)"
@@ -315,15 +421,21 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
                   @click.stop="handleAction('cancel-parse', item)"
                 >
                   <t-icon class="icon" name="close-circle" />
-                  <span>{{ t('knowledgeBase.cancelParse') }}</span>
+                  <span>{{ t("knowledgeBase.cancelParse") }}</span>
                 </div>
-                <div class="row-menu-item" @click.stop="handleAction('move', item)">
+                <div
+                  class="row-menu-item"
+                  @click.stop="handleAction('move', item)"
+                >
                   <t-icon class="icon" name="swap" />
-                  <span>{{ t('knowledgeBase.moveDocument') }}</span>
+                  <span>{{ t("knowledgeBase.moveDocument") }}</span>
                 </div>
-                <div class="row-menu-item danger" @click.stop="handleAction('delete', item)">
+                <div
+                  class="row-menu-item danger"
+                  @click.stop="handleAction('delete', item)"
+                >
                   <t-icon class="icon" name="delete" />
-                  <span>{{ t('knowledgeBase.deleteDocument') }}</span>
+                  <span>{{ t("knowledgeBase.deleteDocument") }}</span>
                 </div>
               </div>
             </template>
@@ -362,15 +474,14 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
 .doc-list-header,
 .doc-list-row {
   display: grid;
-  grid-template-columns:
-    44px                       // checkbox
-    minmax(260px, 2.6fr)       // name
-    minmax(100px, 0.9fr)       // tag
-    minmax(96px, 0.8fr)        // source
-    96px                       // size
-    minmax(96px, 0.7fr)        // status
-    140px                      // updated_at
-    48px;                      // actions
+  grid-template-columns: 44px // checkbox
+    minmax(260px, 2.6fr) // name
+    minmax(100px, 0.9fr) // tag
+    minmax(96px, 0.8fr) // source
+    96px // size
+    minmax(96px, 0.7fr) // status
+    140px // updated_at
+    48px; // actions
   align-items: center;
   column-gap: 0;
   padding: 0 16px;
@@ -397,7 +508,9 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
   border-bottom: 1px solid var(--td-component-stroke);
   border-radius: 8px 8px 0 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  transition: border-radius 0.15s ease, box-shadow 0.2s ease;
+  transition:
+    border-radius 0.15s ease,
+    box-shadow 0.2s ease;
 
   &.is-stuck {
     border-radius: 0;
@@ -419,7 +532,10 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
   color: var(--td-text-color-primary);
   border-bottom: 1px solid var(--td-component-stroke);
   cursor: pointer;
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
   &:last-child {
     border-bottom: 0;
@@ -442,8 +558,12 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
   align-items: center;
   min-width: 0;
   padding: 0 8px;
-  &:first-child { padding-left: 0; }
-  &:last-child { padding-right: 0; }
+  &:first-child {
+    padding-left: 0;
+  }
+  &:last-child {
+    padding-right: 0;
+  }
 }
 
 .cell-check {
@@ -579,7 +699,9 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
   animation: doc-list-spin 0.9s linear infinite;
 }
 @keyframes doc-list-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .row-more-btn {
@@ -594,7 +716,10 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
   color: var(--td-text-color-secondary);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
 
   &:hover {
     background: var(--td-component-stroke);
@@ -626,7 +751,9 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
   color: var(--td-text-color-primary);
   cursor: pointer;
   border-radius: 6px;
-  transition: background-color 0.15s cubic-bezier(0.2, 0, 0, 1), transform 0.12s ease;
+  transition:
+    background-color 0.15s cubic-bezier(0.2, 0, 0, 1),
+    transform 0.12s ease;
 
   &:hover {
     background: var(--td-bg-color-container-hover);
@@ -653,7 +780,7 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
     position: relative;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       top: -3px;
       left: 8px;
@@ -678,6 +805,78 @@ const handleAction = (action: 'edit' | 'reparse' | 'cancel-parse' | 'move' | 'de
     &:active {
       background: var(--td-error-color-2);
     }
+  }
+}
+
+/* ============= Mobile overrides ============= */
+@media (max-width: 767px) {
+  .doc-list-view {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+  }
+
+  .doc-list-header {
+    display: none;
+  }
+
+  .doc-list-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    padding: 12px 16px;
+    min-height: auto;
+    position: relative;
+  }
+
+  .cell-check {
+    display: none;
+  }
+
+  .cell-name {
+    flex: 1 1 100%;
+    padding: 0;
+    gap: 8px;
+  }
+
+  .cell-source,
+  .cell-size,
+  .cell-time,
+  .cell-actions {
+    display: none;
+  }
+
+  .cell-tag {
+    flex: 0 1 auto;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .cell-status {
+    flex: 0 1 auto;
+    padding: 0;
+    margin-left: auto;
+  }
+
+  .row-file-icon-wrap {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  .row-file-name {
+    font-size: 13px;
+  }
+
+  .row-more-btn {
+    opacity: 1;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+  }
+
+  .doc-list-body {
+    border-radius: 0;
   }
 }
 </style>

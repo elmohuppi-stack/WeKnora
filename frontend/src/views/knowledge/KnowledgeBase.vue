@@ -13,6 +13,8 @@ import {
 import { MessagePlugin, Icon as TIcon } from "tdesign-vue-next";
 import DocContent from "@/components/doc-content.vue";
 import KnowledgeProcessingTimeline from "@/components/knowledge-processing-timeline.vue";
+import MobileKBUploadFab from "@/components/mobile/MobileKBUploadFab.vue";
+import MobileUploadSheet from "@/components/mobile/MobileUploadSheet.vue";
 import useKnowledgeBase from "@/hooks/useKnowledgeBase";
 import { useRoute, useRouter } from "vue-router";
 import EmptyKnowledge from "@/components/empty-knowledge.vue";
@@ -55,6 +57,7 @@ import FAQEntryManager from "./components/FAQEntryManager.vue";
 import DocumentListView from "./components/DocumentListView.vue";
 import DocumentBatchBar from "./components/DocumentBatchBar.vue";
 import WikiBrowser from "./wiki/WikiBrowser.vue";
+import MobileWikiBrowser from "./wiki/MobileWikiBrowser.vue";
 import { getWikiStats } from "@/api/wiki";
 import {
   listMoveTargets,
@@ -1904,6 +1907,24 @@ const handleManualCreate = () => {
   });
 };
 
+// Mobile upload sheet
+const uploadSheetVisible = ref(false);
+const handleMobileUploadFabClick = () => {
+  uploadSheetVisible.value = true;
+};
+const handleMobileUploadFile = () => {
+  uploadSheetVisible.value = false;
+  nextTick(() => uploadInputRef.value?.click());
+};
+const handleMobileImportURL = () => {
+  uploadSheetVisible.value = false;
+  nextTick(() => handleURLImportClick());
+};
+const handleMobileImportYouTube = () => {
+  uploadSheetVisible.value = false;
+  nextTick(() => handleYouTubeImportClick());
+};
+
 // URL 导入相关
 const urlDialogVisible = ref(false);
 const urlInputValue = ref("");
@@ -2469,7 +2490,8 @@ async function createNewSession(value: string): Promise<void> {
 <template>
   <template v-if="!isFAQ">
     <div class="knowledge-layout">
-      <div class="document-header">
+      <!-- ========== Desktop header ========== -->
+      <div v-if="!uiStore.isMobile" class="document-header">
         <div class="document-header-title">
           <div class="document-title-row">
             <h2 class="document-breadcrumb">
@@ -2639,19 +2661,74 @@ async function createNewSession(value: string): Promise<void> {
         </div>
       </div>
 
+      <!-- ========== Mobile header ========== -->
+      <div v-if="uiStore.isMobile" class="mobile-kb-header">
+        <div class="mobile-kb-top-row">
+          <button class="mobile-kb-back" @click="handleNavigateToKbList">
+            <t-icon name="arrow-left" size="20px" />
+          </button>
+          <span class="mobile-kb-name" v-if="kbInfo">{{ kbInfo.name }}</span>
+          <button
+            v-if="canManage"
+            class="mobile-kb-settings"
+            @click="handleOpenKBSettings"
+          >
+            <t-icon name="setting" size="18px" />
+          </button>
+        </div>
+        <div class="mobile-kb-tabs">
+          <button
+            class="mobile-kb-tab"
+            :class="{ active: activeKbTab === 'documents' }"
+            @click="activeKbTab = 'documents'"
+          >
+            <t-icon name="file" size="18px" />
+            <span>{{ $t("knowledgeEditor.wikiBrowser.tabDocuments") }}</span>
+          </button>
+          <button
+            v-if="isWiki"
+            class="mobile-kb-tab"
+            :class="{ active: activeKbTab === 'wiki' }"
+            @click="activeKbTab = 'wiki'"
+          >
+            <t-icon name="book" size="18px" />
+            <span>Wiki</span>
+            <t-loading
+              v-if="wikiIsIndexing"
+              size="small"
+              class="mobile-tab-indicator"
+            />
+          </button>
+          <button
+            v-if="isWiki"
+            class="mobile-kb-tab"
+            :class="{ active: activeKbTab === 'graph' }"
+            @click="activeKbTab = 'graph'"
+          >
+            <t-icon name="relation" size="18px" />
+            <span>{{ $t("knowledgeEditor.wikiBrowser.tabGraph") }}</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Wiki Browser / Graph (shown when wiki or graph tab is active) -->
       <div
         v-if="isWiki && (activeKbTab === 'wiki' || activeKbTab === 'graph')"
         class="wiki-main-area"
       >
         <WikiBrowser
-          v-if="kbId"
+          v-if="kbId && !uiStore.isMobile"
           :knowledge-base-id="kbId"
           :view="activeKbTab === 'graph' ? 'graph' : 'browser'"
           :can-edit="canEdit"
           @open-source-doc="openSourceDoc"
           @status-change="onWikiStatusChange"
           @view-graph="onViewWikiInGraph"
+        />
+        <MobileWikiBrowser
+          v-if="kbId && uiStore.isMobile"
+          :knowledge-base-id="kbId"
+          @open-source-doc="openSourceDoc"
         />
       </div>
 
@@ -3801,6 +3878,23 @@ async function createNewSession(value: string): Promise<void> {
           </div>
         </div>
       </template>
+
+      <!-- Mobile FAB + Upload Sheet (only on mobile in documents tab) -->
+      <MobileKBUploadFab
+        v-if="
+          uiStore.isMobile &&
+          canEdit &&
+          (activeKbTab === 'documents' || !isWiki)
+        "
+        @click="handleMobileUploadFabClick"
+      />
+      <MobileUploadSheet
+        :visible="uploadSheetVisible"
+        @close="uploadSheetVisible = false"
+        @upload-file="handleMobileUploadFile"
+        @import-url="handleMobileImportURL"
+        @import-youtube="handleMobileImportYouTube"
+      />
 
       <!-- DocContent drawer (shared by documents tab and wiki source refs) -->
       <DocContent
@@ -5510,5 +5604,263 @@ async function createNewSession(value: string): Promise<void> {
 
 .del-card {
   vertical-align: middle;
+}
+
+/* ============= Mobile overrides ============= */
+@media (max-width: 767px) {
+  .knowledge-layout {
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  .document-header {
+    display: none;
+  }
+
+  .document-subtitle {
+    display: none;
+  }
+
+  .parser-hint,
+  .storage-engine-warning {
+    font-size: 11px;
+    padding: 4px 8px;
+    margin: 0 12px 8px;
+  }
+
+  .tag-sidebar {
+    display: none;
+  }
+
+  /* Knowledge main area */
+  .knowledge-main {
+    padding: 0;
+    margin: 0;
+  }
+
+  .tag-content {
+    padding: 0;
+  }
+
+  /* Filter bar: search prominent, other filters collapsed */
+  .doc-filter-bar {
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--td-bg-color-container, #fff);
+    border-bottom: 1px solid var(--td-border-level-1-color, #f0f0f0);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+
+  .doc-search-input {
+    width: 100% !important;
+    min-width: 0;
+  }
+
+  .doc-type-select {
+    width: calc(50% - 3px) !important;
+    min-width: 0;
+    flex: none;
+  }
+
+  /* Hide less important filters on mobile */
+  .doc-date-range {
+    display: none !important;
+  }
+
+  .doc-view-toggle {
+    display: none !important;
+  }
+
+  .doc-filter-actions {
+    display: none !important;
+  }
+
+  /* Scroll container */
+  .doc-scroll-container {
+    padding: 8px 12px;
+  }
+
+  /* Document card grid */
+  .doc-card-list {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .knowledge-card {
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+
+  .card-content-title {
+    font-size: 13px;
+  }
+
+  .card-time {
+    font-size: 11px;
+  }
+
+  .card-bottom {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .card-tag-selector {
+    max-width: 120px;
+  }
+
+  .document-upload-input {
+    display: none;
+  }
+
+  /* Content bar (from doc-content) */
+  .content-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .content-bar .doc-filter-actions {
+    display: none;
+  }
+
+  .content-bar-search {
+    width: 100%;
+  }
+}
+
+/* ============= Mobile header ============= */
+.mobile-kb-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+  background: var(--td-bg-color-container, #fff);
+  border-bottom: 1px solid var(--td-border-level-1-color, #f0f0f0);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.mobile-kb-top-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  min-height: 44px;
+}
+
+.mobile-kb-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--td-text-color-primary, #333);
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &:active {
+    background: var(--td-bg-color-container-hover, #f5f5f5);
+  }
+}
+
+.mobile-kb-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--td-text-color-primary, #333);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobile-kb-settings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--td-text-color-secondary, #999);
+  -webkit-tap-highlight-color: transparent;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &:active {
+    background: var(--td-bg-color-container-hover, #f5f5f5);
+  }
+}
+
+.mobile-kb-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.mobile-kb-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--td-text-color-secondary, #999);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  white-space: nowrap;
+  position: relative;
+  flex-shrink: 0;
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 14px;
+    right: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: transparent;
+    transition: background 0.2s;
+  }
+
+  &.active {
+    color: var(--td-brand-color, #0052d9);
+    font-weight: 500;
+
+    &::after {
+      background: var(--td-brand-color, #0052d9);
+    }
+  }
+
+  &:active {
+    opacity: 0.7;
+  }
+}
+
+.mobile-tab-indicator {
+  display: inline-flex;
+  align-items: center;
+  color: var(--td-brand-color);
+  font-size: 12px;
+  line-height: 1;
 }
 </style>
