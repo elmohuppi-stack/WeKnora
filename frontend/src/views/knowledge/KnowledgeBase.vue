@@ -3893,7 +3893,7 @@ async function createNewSession(value: string): Promise<void> {
           canEdit &&
           (activeKbTab === 'documents' || !isWiki)
         "
-        @click="handleMobileUploadFabClick"
+        @fab-click="handleMobileUploadFabClick"
       />
       <MobileUploadSheet
         :visible="uploadSheetVisible"

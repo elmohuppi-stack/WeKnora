@@ -1,5 +1,5 @@
 <template>
-  <div class="mobile-fab" @click="emit('click')">
+  <button class="mobile-fab" @click="$emit('fabClick')">
     <svg
       width="24"
       height="24"
@@ -13,12 +13,12 @@
       <line x1="12" y1="5" x2="12" y2="19" />
       <line x1="5" y1="12" x2="19" y2="12" />
     </svg>
-  </div>
+  </button>
 </template>
 
 <script setup lang="ts">
 defineEmits<{
-  (e: "click"): void;
+  (e: "fabClick"): void;
 }>();
 </script>
 
@@ -35,6 +35,10 @@ defineEmits<{
   display: flex;
   align-items: center;
   justify-content: center;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
   cursor: pointer;
   z-index: 50;
