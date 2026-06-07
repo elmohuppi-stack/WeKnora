@@ -314,6 +314,8 @@ func (p *ApifyProvider) tryActorTranscript(ctx context.Context, actor apifyActor
 }
 
 // callActor calls a single Apify actor synchronously and returns the raw dataset items.
+// It uses an isolated context with a generous timeout so that Apify calls are not
+// cancelled when the HTTP request context expires (e.g. due to proxy timeouts).
 func (p *ApifyProvider) callActor(ctx context.Context, actor apifyActorDef, videoURL, preferredLang string) ([]json.RawMessage, error) {
 	input := actor.buildInput(videoURL, preferredLang)
 	body, err := json.Marshal(input)
@@ -322,7 +324,10 @@ func (p *ApifyProvider) callActor(ctx context.Context, actor apifyActorDef, vide
 	}
 
 	apiURL := fmt.Sprintf("https://api.apify.com/v2/acts/%s/run-sync-get-dataset-items?token=%s", actor.apiPath, p.apiKey)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL, bytes.NewReader(body))
+
+	// Use a detached context so the Apify call isn't cancelled by the HTTP client
+	// disconnecting. The HTTP client has its own timeout (apifyActorCallTimeout).
+	req, err := http.NewRequestWithContext(context.WithoutCancel(ctx), http.MethodPost, apiURL, bytes.NewReader(body))
 	if err != nil {
 		return nil, fmt.Errorf("create request: %w", err)
 	}
