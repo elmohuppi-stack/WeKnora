@@ -83,6 +83,9 @@ export default function (knowledgeBaseId?: string) {
               displayName = rawName.substring(0, dotIndex);
             }
           }
+          // Replace underscores with spaces for readability
+          // (common in filenames like Ergebnisprotokoll_Krisenstabssitzung_2020-09-11)
+          displayName = displayName.replace(/_/g, " ");
           const fileTypeSource =
             item.file_type || (item.type === "manual" ? "MANUAL" : "");
           return {

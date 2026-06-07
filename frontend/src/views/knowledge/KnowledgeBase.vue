@@ -351,6 +351,45 @@ let {
   getCardDetails,
   getfDetails,
 } = useKnowledgeBase(kbId.value);
+// Client-side sort for the document card list.
+// Options: name-asc | name-desc | date-desc | date-asc
+const sortOrder = ref<string>("date-desc");
+
+const sortedCardList = computed(() => {
+  const list = [...cardList.value];
+  switch (sortOrder.value) {
+    case "name-asc":
+      list.sort((a, b) => (a.file_name || "").localeCompare(b.file_name || ""));
+      break;
+    case "name-desc":
+      list.sort((a, b) => (b.file_name || "").localeCompare(a.file_name || ""));
+      break;
+    case "date-asc":
+      list.sort(
+        (a, b) =>
+          new Date(a.updated_at || 0).getTime() -
+          new Date(b.updated_at || 0).getTime(),
+      );
+      break;
+    case "date-desc":
+    default:
+      list.sort(
+        (a, b) =>
+          new Date(b.updated_at || 0).getTime() -
+          new Date(a.updated_at || 0).getTime(),
+      );
+      break;
+  }
+  return list;
+});
+
+const sortOptions = [
+  { label: "Neueste zuerst", value: "date-desc" },
+  { label: "Älteste zuerst", value: "date-asc" },
+  { label: "Name A-Z", value: "name-asc" },
+  { label: "Name Z-A", value: "name-desc" },
+];
+
 const onVisibleChange = (visible: boolean) => {
   _onVisibleChange(visible);
   if (!visible) {
@@ -3001,6 +3040,11 @@ async function createNewSession(value: string): Promise<void> {
                   class="doc-type-select"
                   clearable
                 />
+                <t-select
+                  v-model="sortOrder"
+                  :options="sortOptions"
+                  class="doc-sort-select"
+                />
                 <t-date-range-picker
                   v-model="updatedTimeRange"
                   :placeholder="[
@@ -3124,7 +3168,7 @@ async function createNewSession(value: string): Promise<void> {
                         'is-selected': selectedIds.has(item.id),
                         'batch-mode': batchMode,
                       }"
-                      v-for="(item, index) in cardList"
+                      v-for="(item, index) in sortedCardList"
                       :key="item.id"
                       @click="onCardClick(item)"
                       @mouseenter="onCardMouseEnter($event, item)"
@@ -4426,6 +4470,11 @@ async function createNewSession(value: string): Promise<void> {
     flex-shrink: 0;
   }
 
+  .doc-sort-select {
+    width: 130px;
+    flex-shrink: 0;
+  }
+
   .doc-date-range {
     width: 280px;
     flex-shrink: 0;
@@ -5332,12 +5381,13 @@ async function createNewSession(value: string): Promise<void> {
   .card-content-title {
     flex: 1;
     min-width: 0;
-    height: 24px;
-    line-height: 24px;
-    display: inline-block;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    line-height: 1.4;
+    max-height: 4.2em;
     color: var(--td-text-color-primary);
     font-family: var(--app-font-family);
     font-size: 14px;
