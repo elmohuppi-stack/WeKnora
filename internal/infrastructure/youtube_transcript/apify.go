@@ -164,10 +164,15 @@ func (p *ApifyProvider) FetchTranscript(ctx context.Context, videoID string, pre
 func (p *ApifyProvider) callApifyActor(ctx context.Context, videoID string, preferredLang string) ([]apifyOutputItem, error) {
 	videoURL := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoID)
 
-	// Build language list: preferred first, then "en" as fallback
-	languages := []string{"en"}
-	if preferredLang != "" && !strings.EqualFold(preferredLang, "en") {
-		languages = []string{preferredLang, "en"}
+	// Build language list: preferred first, then "de" and "en" as fallbacks.
+	// "de" is included by default because the majority of imported videos are German.
+	languages := []string{"de", "en"}
+	if preferredLang != "" && !strings.EqualFold(preferredLang, "de") && !strings.EqualFold(preferredLang, "en") {
+		languages = []string{preferredLang, "de", "en"}
+	} else if strings.EqualFold(preferredLang, "de") {
+		languages = []string{"de", "en"}
+	} else if strings.EqualFold(preferredLang, "en") {
+		languages = []string{"en", "de"}
 	}
 
 	input := apifyInput{
