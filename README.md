@@ -39,8 +39,8 @@
 <p align="center">
   <h4 align="center">
 
-  [Overview](#-overview) • [Architecture](#-architecture) • [Key Features](#-key-features) • [Getting Started](#-getting-started) • [API Reference](#-api-reference) • [Developer Guide](#-developer-guide)
-  
+[Overview](#-overview) • [Architecture](#-architecture) • [Key Features](#-key-features) • [Getting Started](#-getting-started) • [API Reference](#-api-reference) • [Developer Guide](#-developer-guide)
+
   </h4>
 </p>
 
@@ -53,7 +53,6 @@
 It is organized around three core capabilities: **RAG-based Quick Q&A** for everyday lookups, a **ReAct Agent** that autonomously orchestrates retrieval, MCP tools and web search to handle complex multi-step tasks, and a brand-new **Wiki Mode** in which agents distill raw documents into a self-maintaining, interlinked markdown knowledge base with an interactive knowledge graph. Combined with multi-source ingestion (Feishu / Notion / Yuque, and growing), 20+ LLM provider integrations, full Langfuse observability, **enterprise-ready multi-tenant RBAC** (4-tier role matrix + per-resource ownership + per-tenant audit log), and a fully self-hostable modular architecture, WeKnora turns scattered documents into a queryable, reasoning-capable, continuously evolving knowledge asset.
 
 The framework supports auto-syncing knowledge from Feishu, Notion, and Yuque (more data sources coming soon), handles 10+ document formats including PDF, Word, images, and Excel, and can serve Q&A directly through IM channels like WeCom, Feishu, Slack, and Telegram. It is compatible with major LLM providers including OpenAI, DeepSeek, Qwen (Alibaba Cloud), Zhipu, Hunyuan, Gemini, MiniMax, NVIDIA, and Ollama. Its fully modular design allows swapping LLMs, vector databases, and storage backends, with support for local and private cloud deployment ensuring complete data sovereignty. WeKnora also integrates with **Langfuse** for comprehensive observability into agent reasoning, token usage, and pipeline tracing.
-
 
 ## ✨ Latest Updates
 
@@ -69,7 +68,6 @@ The framework supports auto-syncing knowledge from Feishu, Notion, and Yuque (mo
 - **v0.3.2** — Knowledge Search entry; per-source parser & storage engine config; image rendering in local storage; document preview; Volcengine TOS; Mermaid rendering; batch session management; memory graph preview.
 - **v0.3.0** — Shared Space; Agent Skills + sandboxed execution; custom agents; Data Analyst agent; thinking mode; Bing / Google web search; API Key auth; Helm chart; Korean i18n; Qdrant.
 - **v0.2.0** — Agent Mode (ReACT); multi-type knowledge bases (FAQ + document); conversation strategy config; DuckDuckGo web search; MCP tool integration; new UI with agent mode switching; MQ async task management.
-
 
 ## 📱 Interface Showcase
 
@@ -100,57 +98,55 @@ Fully modular pipeline from document parsing, vectorization, and retrieval to LL
 
 **Intelligent Conversation**
 
-| Capability | Details |
-|------------|---------|
+| Capability            | Details                                                                                                                                 |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | Intelligent Reasoning | ReACT progressive multi-step reasoning, autonomously orchestrating knowledge retrieval, MCP tools, and web search; custom agent support |
-| Quick Q&A | RAG-based Q&A over knowledge bases for fast and accurate answers |
-| Wiki Mode | Agent-driven auto-generation of structured, interlinked markdown Wiki pages from raw documents |
-| Tool Calling | Built-in tools, MCP tools, web search |
-| Conversation Strategy | Online Prompt editing, retrieval threshold tuning, multi-turn context awareness |
-| Suggested Questions | Auto-generated question suggestions based on knowledge base content |
+| Quick Q&A             | RAG-based Q&A over knowledge bases for fast and accurate answers                                                                        |
+| Wiki Mode             | Agent-driven auto-generation of structured, interlinked markdown Wiki pages from raw documents                                          |
+| Tool Calling          | Built-in tools, MCP tools, web search                                                                                                   |
+| Conversation Strategy | Online Prompt editing, retrieval threshold tuning, multi-turn context awareness                                                         |
+| Suggested Questions   | Auto-generated question suggestions based on knowledge base content                                                                     |
 
 **Knowledge Management**
 
-| Capability | Details |
-|------------|---------|
-| Knowledge Base Types | FAQ / Document / Wiki with folder import, URL import, tag management, and online entry |
-| Data Source Import | Auto-sync from Feishu / Notion / Yuque (more data sources coming soon); incremental and full sync |
-| Document Formats | PDF / Word / Txt / Markdown / HTML / Images / CSV / Excel / PPT / JSON |
-| Retrieval Strategies | BM25 sparse / Dense retrieval / GraphRAG / parent-child chunking / multi-dimensional indexing |
-| E2E Testing | Full-pipeline visualization with recall hit rate, BLEU / ROUGE metric evaluation |
+| Capability           | Details                                                                                           |
+| -------------------- | ------------------------------------------------------------------------------------------------- |
+| Knowledge Base Types | FAQ / Document / Wiki with folder import, URL import, tag management, and online entry            |
+| Data Source Import   | Auto-sync from Feishu / Notion / Yuque (more data sources coming soon); incremental and full sync |
+| Document Formats     | PDF / Word / Txt / Markdown / HTML / Images / CSV / Excel / PPT / JSON                            |
+| Retrieval Strategies | BM25 sparse / Dense retrieval / GraphRAG / parent-child chunking / multi-dimensional indexing     |
+| E2E Testing          | Full-pipeline visualization with recall hit rate, BLEU / ROUGE metric evaluation                  |
 
 **Integrations & Extensions**
 
-| Capability | Details |
-|------------|---------|
-| LLMs | OpenAI / Azure OpenAI / Anthropic (Claude) / DeepSeek / Qwen (Alibaba Cloud) / Zhipu / Hunyuan / Doubao (Volcengine) / Gemini / MiniMax / NVIDIA / Novita AI / SiliconFlow / OpenRouter / Ollama |
-| Embeddings | Ollama / BGE / GTE / Zhipu / OpenAI-compatible APIs |
-| Vector DBs | PostgreSQL (pgvector) / Elasticsearch / Milvus / Weaviate / Qdrant / Apache Doris / Tencent VectorDB |
-| Object Storage | Local / MinIO / AWS S3 / Volcengine TOS / Alibaba Cloud OSS / Kingsoft Cloud KS3 / Huawei Cloud OBS |
-| IM Channels | WeCom / Feishu / Slack / Telegram / DingTalk / Mattermost / WeChat |
-| Web Search | DuckDuckGo / Bing / Google / Tavily / Baidu / Ollama / SearXNG |
+| Capability     | Details                                                                                                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| LLMs           | OpenAI / Azure OpenAI / Anthropic (Claude) / DeepSeek / Qwen (Alibaba Cloud) / Zhipu / Hunyuan / Doubao (Volcengine) / Gemini / MiniMax / NVIDIA / Novita AI / SiliconFlow / OpenRouter / Ollama |
+| Embeddings     | Ollama / BGE / GTE / Zhipu / OpenAI-compatible APIs                                                                                                                                              |
+| Vector DBs     | PostgreSQL (pgvector) / Elasticsearch / Milvus / Weaviate / Qdrant / Apache Doris / Tencent VectorDB                                                                                             |
+| Object Storage | Local / MinIO / AWS S3 / Volcengine TOS / Alibaba Cloud OSS / Kingsoft Cloud KS3 / Huawei Cloud OBS                                                                                              |
+| IM Channels    | WeCom / Feishu / Slack / Telegram / DingTalk / Mattermost / WeChat                                                                                                                               |
+| Web Search     | DuckDuckGo / Bing / Google / Tavily / Baidu / Ollama / SearXNG                                                                                                                                   |
 
 **Platform**
 
-| Capability | Details |
-|------------|---------|
-| Deployment | Local / Docker / Kubernetes (Helm) with private and offline support |
-| UI | Web UI / RESTful API / CLI (`weknora`) / Chrome Extension / WeChat Mini Program |
-| Access Control | Tenant RBAC with 4-tier role matrix (Owner / Admin / Contributor / Viewer), per-KB resource ownership, per-tenant audit log, invite-only workspaces, self-service tenant creation, cross-tenant superuser |
-| Security | AES-256-GCM at-rest encryption for API keys and MCP / data-source credentials with graceful key rotation; gRPC TLS + Token between app and docreader; SSRF-safe HTTP client; sandbox isolation for agent skills |
-| Observability | Integrated Langfuse for ReAct loops, token tracking, tool calls, and pipeline tracing |
-| Task Management | MQ async tasks, automatic database migration on version upgrade |
-| Model Management | Centralized config, per-knowledge-base model selection, multi-tenant built-in model sharing, WeKnora Cloud hosted models and parsing |
+| Capability       | Details                                                                                                                                                                                                         |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Deployment       | Local / Docker / Kubernetes (Helm) with private and offline support                                                                                                                                             |
+| UI               | Web UI / RESTful API / CLI (`weknora`) / Chrome Extension / WeChat Mini Program                                                                                                                                 |
+| Access Control   | Tenant RBAC with 4-tier role matrix (Owner / Admin / Contributor / Viewer), per-KB resource ownership, per-tenant audit log, invite-only workspaces, self-service tenant creation, cross-tenant superuser       |
+| Security         | AES-256-GCM at-rest encryption for API keys and MCP / data-source credentials with graceful key rotation; gRPC TLS + Token between app and docreader; SSRF-safe HTTP client; sandbox isolation for agent skills |
+| Observability    | Integrated Langfuse for ReAct loops, token tracking, tool calls, and pipeline tracing                                                                                                                           |
+| Task Management  | MQ async tasks, automatic database migration on version upgrade                                                                                                                                                 |
+| Model Management | Centralized config, per-knowledge-base model selection, multi-tenant built-in model sharing, WeKnora Cloud hosted models and parsing                                                                            |
 
 ## 🧩 Chrome Extension
 
 [**WeKnora Chrome Extension**](https://chromewebstore.google.com/detail/jpemjbopikggjlmikmclgbmkhhopjdgd) lets you capture web content directly into your WeKnora knowledge base. Select text, images, or entire pages in the browser and save them as knowledge entries with one click — no copy-paste or file upload needed.
 
-
 ## 📱 WeChat Mini Program
 
 The [WeKnora Mini Program](./miniprogram/README.md) provides a lightweight mobile client for configuring WeKnora API access, selecting knowledge bases, importing URLs, and asking knowledge chat from WeChat.
-
 
 ## 🦞 ClawHub Skill
 
@@ -202,13 +198,13 @@ Once started, visit **http://localhost** to get started.
 
 Add `--profile` flags to enable additional components. Multiple profiles can be combined:
 
-| Profile | Description | Command |
-|---------|-------------|---------|
-| _(default)_ | Core services | `docker compose up -d` |
-| `full` | All features | `docker compose --profile full up -d` |
-| `neo4j` | Knowledge Graph (Neo4j) | `docker compose --profile neo4j up -d` |
-| `minio` | Object Storage (MinIO) | `docker compose --profile minio up -d` |
-| `langfuse` | Tracing (Langfuse) | `docker compose --profile langfuse up -d` |
+| Profile     | Description             | Command                                   |
+| ----------- | ----------------------- | ----------------------------------------- |
+| _(default)_ | Core services           | `docker compose up -d`                    |
+| `full`      | All features            | `docker compose --profile full up -d`     |
+| `neo4j`     | Knowledge Graph (Neo4j) | `docker compose --profile neo4j up -d`    |
+| `minio`     | Object Storage (MinIO)  | `docker compose --profile minio up -d`    |
+| `langfuse`  | Tracing (Langfuse)      | `docker compose --profile langfuse up -d` |
 
 Combine profiles: `docker compose --profile neo4j --profile minio up -d`
 
@@ -216,10 +212,10 @@ Stop services: `docker compose down`
 
 ### 🌐 Service URLs
 
-| Service | URL |
-|---------|-----|
-| Web UI | `http://localhost` |
-| Backend API | `http://localhost:8080` |
+| Service          | URL                     |
+| ---------------- | ----------------------- |
+| Web UI           | `http://localhost`      |
+| Backend API      | `http://localhost:8080` |
 | Langfuse Tracing | `http://localhost:3000` |
 
 ## MCP Server
@@ -233,8 +229,6 @@ WeKnora serves as the core technology framework for the [WeChat Dialog Open Plat
 - **Zero-code Deployment**: Simply upload knowledge to quickly deploy intelligent Q&A services within the WeChat ecosystem, achieving an "ask and answer" experience
 - **Efficient Question Management**: Support for categorized management of high-frequency questions, with rich data tools to ensure accurate, reliable, and easily maintainable answers
 - **WeChat Ecosystem Integration**: Through the WeChat Dialog Open Platform, WeKnora's intelligent Q&A capabilities can be seamlessly integrated into WeChat Official Accounts, Mini Programs, and other WeChat scenarios, enhancing user interaction experiences
-
-
 
 ## 📘 API Reference
 
@@ -262,13 +256,13 @@ make dev-frontend
 ```
 
 **Development Advantages:**
+
 - ✅ Frontend modifications auto hot-reload (no restart needed)
 - ✅ Backend modifications quick restart (5-10 seconds, supports Air hot-reload)
 - ✅ No need to rebuild Docker images
 - ✅ Support IDE breakpoint debugging
 
 **Detailed Documentation:** [Development Environment Quick Start](./docs/开发指南.md)
-
 
 ## 🤝 Contributing
 
@@ -287,7 +281,28 @@ Welcome to submit [Issues](https://github.com/Tencent/WeKnora/issues) or Pull Re
 - Configure proper firewall rules and access controls for your deployment environment
 - Regularly update to the latest version for security patches and improvements
 
-## 👥 Contributors
+## � Custom Modifications (elmohuppi-stack/WeKnora)
+
+This fork contains the following custom changes:
+
+### YouTube Transcript Import
+
+- **Provider**: Uses **Apify** (`codepoetry/youtube-transcript-ai-scraper`) instead of Supadata for YouTube transcript fetching
+- **Fallback Chain**: If the primary Apify actor fails, the system automatically tries `supreme_coder/youtube-transcript-scraper` and `scrape-creators/best-youtube-transcripts-scraper` as backups
+- **Language Defaults**: German (`de`) is set as the default language alongside English (`en`) — `["de", "en"]`
+- **Context Isolation**: Apify API calls and database writes use `context.WithoutCancel()` so long-running transcript fetches survive HTTP request timeouts
+- **Timeout**: Frontend Axios timeout for YouTube imports is increased to **180s** (default is 30s)
+- **Environment**: Set `APIFY_API_KEY` in `.env` to enable (see `.env.example`)
+
+### Database
+
+- **URL Storage**: The `source` column in the `knowledges` table was extended from `VARCHAR(128)` to `TEXT` (migration `000058`) to support long URLs
+
+### Deployment (Production)
+
+- **External Nginx**: `proxy_read_timeout` set to `180s` for long-running requests
+
+## �👥 Contributors
 
 Thanks to these excellent contributors:
 
