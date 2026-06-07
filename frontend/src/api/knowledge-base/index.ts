@@ -208,7 +208,11 @@ export function createKnowledgeFromYouTube(
   kbId: string,
   data: { url: string; tag_id?: string; language?: string },
 ) {
-  return post(`/api/v1/knowledge-bases/${kbId}/knowledge/youtube`, data);
+  // YouTube transcript fetch can take >30s (Apify actor timeout is 120s),
+  // so use a 180s timeout instead of the default 30s.
+  return post(`/api/v1/knowledge-bases/${kbId}/knowledge/youtube`, data, {
+    timeout: 180000,
+  });
 }
 
 // 手工创建知识
