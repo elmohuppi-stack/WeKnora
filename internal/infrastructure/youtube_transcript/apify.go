@@ -218,6 +218,8 @@ type apifyMetadata struct {
 // FetchMetadata fetches video metadata via the Apify actor chain.
 // It tries each actor until one returns metadata successfully.
 func (p *ApifyProvider) FetchMetadata(ctx context.Context, videoID string) (*types.YouTubeMetadataResult, error) {
+	videoURL := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoID)
+
 	// Metadata comes from the codepoetry actor's native response format.
 	// For simplicity, we do a full transcript call and extract metadata
 	// from the first successful actor that returns it.
@@ -226,7 +228,7 @@ func (p *ApifyProvider) FetchMetadata(ctx context.Context, videoID string) (*typ
 	}
 
 	for _, actor := range p.actors {
-		items, err := p.callActor(ctx, actor, videoID, "")
+		items, err := p.callActor(ctx, actor, videoURL, "")
 		if err != nil {
 			continue
 		}
