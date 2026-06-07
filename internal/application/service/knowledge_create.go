@@ -812,22 +812,29 @@ func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
 		return nil, werrors.NewBadRequestError("无效的YouTube视频链接")
 	}
 
+	// Detach context from the HTTP request so that long-running operations
+	// (Apify transcript fetch, DB writes) are not cancelled when the HTTP
+	// client disconnects or times out. The Apify HTTP client has its own
+	// timeout (120s), and DB operations should complete quickly once the
+	// transcript data is available.
+	detachedCtx := context.WithoutCancel(ctx)
+
 	// Get knowledge base configuration
-	kb, err := s.kbService.GetKnowledgeBaseByID(ctx, kbID)
+	kb, err := s.kbService.GetKnowledgeBaseByID(detachedCtx, kbID)
 	if err != nil {
 		logger.Errorf(ctx, "Failed to get knowledge base: %v", err)
 		return nil, err
 	}
 
-	if err := s.checkStorageEngineConfigured(ctx, kb); err != nil {
+	if err := s.checkStorageEngineConfigured(detachedCtx, kb); err != nil {
 		return nil, err
 	}
 
-	tenantID := ctx.Value(types.TenantIDContextKey).(uint64)
+	tenantID := detachedCtx.Value(types.TenantIDContextKey).(uint64)
 
 	// Check if this video URL already exists in the knowledge base
 	fileHash := calculateStr(payload.URL)
-	exists, existingKnowledge, err := s.repo.CheckKnowledgeExists(ctx, tenantID, kbID, &types.KnowledgeCheckParams{
+	exists, existingKnowledge, err := s.repo.CheckKnowledgeExists(detachedCtx, tenantID, kbID, &types.KnowledgeCheckParams{
 		Type:     types.KnowledgeTypeYouTube,
 		URL:      payload.URL,
 		FileHash: fileHash,
@@ -840,7 +847,7 @@ func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
 		logger.Infof(ctx, "YouTube video already exists: %s", payload.URL)
 		existingKnowledge.CreatedAt = time.Now()
 		existingKnowledge.UpdatedAt = time.Now()
-		if err := s.repo.UpdateKnowledge(ctx, existingKnowledge); err != nil {
+		if err := s.repo.UpdateKnowledge(detachedCtx, existingKnowledge); err != nil {
 			logger.Errorf(ctx, "Failed to update existing knowledge: %v", err)
 			return nil, err
 		}
@@ -848,7 +855,7 @@ func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
 	}
 
 	// Check storage quota
-	tenantInfo := ctx.Value(types.TenantInfoContextKey).(*types.Tenant)
+	tenantInfo := detachedCtx.Value(types.TenantInfoContextKey).(*types.Tenant)
 	if tenantInfo.StorageQuota > 0 && tenantInfo.StorageUsed >= tenantInfo.StorageQuota {
 		logger.Error(ctx, "Storage quota exceeded")
 		return nil, types.NewStorageQuotaExceededError()
@@ -856,7 +863,7 @@ func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
 
 	// Fetch YouTube info (transcript + metadata) synchronously
 	// so we can create the knowledge entry with complete info.
-	youtubeInfo, err := FetchYouTubeInfo(ctx, videoID, payload.Language)
+	youtubeInfo, err := FetchYouTubeInfo(detachedCtx, videoID, payload.Language)
 	if err != nil {
 		logger.Errorf(ctx, "Failed to fetch YouTube info for video %s: %v", videoID, err)
 		return nil, werrors.NewBadRequestError(fmt.Sprintf("无法获取YouTube视频信息: %v", err))
@@ -910,9 +917,10 @@ func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
 		Metadata:         types.JSON(youtubeMetaJSON),
 	}
 
-	// Save knowledge record
+	// Save knowledge record — use detached context so DB write survives
+	// even if the HTTP request context has been cancelled.
 	logger.Infof(ctx, "Saving knowledge record to database, ID: %s", knowledge.ID)
-	if err := s.repo.CreateKnowledge(ctx, knowledge); err != nil {
+	if err := s.repo.CreateKnowledge(detachedCtx, knowledge); err != nil {
 		logger.Errorf(ctx, "Failed to create knowledge record: %v", err)
 		return nil, err
 	}
@@ -928,7 +936,7 @@ func (s *knowledgeService) CreateKnowledgeFromYouTube(ctx context.Context,
 		}
 	}
 
-	lang, _ := types.LanguageFromContext(ctx)
+	lang, _ := types.LanguageFromContext(detachedCtx)
 	taskPayload := types.DocumentProcessPayload{
 		TenantID:                 tenantID,
 		KnowledgeID:              knowledge.ID,
