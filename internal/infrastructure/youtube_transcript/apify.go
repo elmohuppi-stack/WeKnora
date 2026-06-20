@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -220,51 +221,149 @@ type apifyMetadata struct {
 func (p *ApifyProvider) FetchMetadata(ctx context.Context, videoID string) (*types.YouTubeMetadataResult, error) {
 	videoURL := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoID)
 
-	// Metadata comes from the codepoetry actor's native response format.
-	// For simplicity, we do a full transcript call and extract metadata
-	// from the first successful actor that returns it.
 	type metaHolder struct {
 		Metadata *apifyMetadata `json:"metadata,omitempty"`
 	}
 
+	// Step 1: try each actor normally (fast path — most videos have captions)
 	for _, actor := range p.actors {
-		items, err := p.callActor(ctx, actor, videoURL, "")
+		result, err := p.tryActorMetadata(ctx, actor, videoURL)
 		if err != nil {
 			continue
 		}
-		if len(items) == 0 {
-			continue
+		if result != nil {
+			return result, nil
 		}
+	}
 
-		// Try to parse metadata fields at the top level of the response item
-		// (this is the actual format returned by codepoetry and other actors).
-		var meta apifyMetadata
-		if err := json.Unmarshal(items[0], &meta); err == nil && meta.Title != "" {
-			p.actorName = actor.name
-			return mapMetadata(&meta, videoID), nil
+	// Step 2: retry the codepoetry actor with AI transcription fallback enabled.
+	// This handles videos without native captions — the actor will use AI to
+	// process the audio and still return metadata (title, channel, etc.).
+	if len(p.actors) > 0 {
+		actor := p.actors[0]
+		items, err := p.callActorWithAIFallback(ctx, actor, videoURL, "")
+		if err == nil && len(items) > 0 {
+			// Try to parse metadata from one of the response items
+			for _, item := range items {
+				var meta apifyMetadata
+				if err := json.Unmarshal(item, &meta); err == nil && meta.Title != "" {
+					p.actorName = actor.name + "(ai-fallback)"
+					return mapMetadata(&meta, videoID), nil
+				}
+				var holder metaHolder
+				if err := json.Unmarshal(item, &holder); err == nil && holder.Metadata != nil {
+					p.actorName = actor.name + "(ai-fallback)"
+					return mapMetadata(holder.Metadata, videoID), nil
+				}
+			}
 		}
-
-		// Fallback: try the metadata wrapper key for compatibility
-		var holder metaHolder
-		if err := json.Unmarshal(items[0], &holder); err == nil && holder.Metadata != nil {
-			p.actorName = actor.name
-			return mapMetadata(holder.Metadata, videoID), nil
-		}
-
-		// Metadata not found in this actor's response, try the next one
-		continue
 	}
 
 	return nil, fmt.Errorf("all Apify actors failed to fetch metadata for video %s", videoID)
 }
 
+// tryActorMetadata attempts to fetch metadata from a single actor's response.
+func (p *ApifyProvider) tryActorMetadata(ctx context.Context, actor apifyActorDef, videoURL string) (*types.YouTubeMetadataResult, error) {
+	items, err := p.callActor(ctx, actor, videoURL, "")
+	if err != nil {
+		return nil, err
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("%s: returned no data", actor.name)
+	}
+
+	type metaHolder struct {
+		Metadata *apifyMetadata `json:"metadata,omitempty"`
+	}
+
+	// Try to parse metadata fields at the top level of the response item
+	var meta apifyMetadata
+	if err := json.Unmarshal(items[0], &meta); err == nil && meta.Title != "" {
+		p.actorName = actor.name
+		return mapMetadata(&meta, videoIDFromURL(videoURL)), nil
+	}
+
+	// Fallback: try the metadata wrapper key for compatibility
+	var holder metaHolder
+	if err := json.Unmarshal(items[0], &holder); err == nil && holder.Metadata != nil {
+		p.actorName = actor.name
+		return mapMetadata(holder.Metadata, videoIDFromURL(videoURL)), nil
+	}
+
+	return nil, fmt.Errorf("%s: no metadata found in response", actor.name)
+}
+
+// callActorWithAIFallback calls the codepoetry actor with AI transcription enabled
+// as a fallback. This is used for metadata fetching when no native captions exist.
+func (p *ApifyProvider) callActorWithAIFallback(ctx context.Context, actor apifyActorDef, videoURL, preferredLang string) ([]json.RawMessage, error) {
+	// Build input with AI fallback enabled
+	languages := buildLanguageList(preferredLang)
+	input := map[string]any{
+		"startUrls": []map[string]any{
+			{"url": videoURL},
+		},
+		"languages":        languages,
+		"outputFormats":    []string{"text", "llm"},
+		"enableAiFallback": true,
+	}
+
+	body, err := json.Marshal(input)
+	if err != nil {
+		return nil, fmt.Errorf("marshal input: %w", err)
+	}
+
+	apiURL := fmt.Sprintf("https://api.apify.com/v2/acts/%s/run-sync-get-dataset-items?token=%s", actor.apiPath, p.apiKey)
+
+	req, err := http.NewRequestWithContext(context.WithoutCancel(ctx), http.MethodPost, apiURL, bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("create request: %w", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := p.client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		return nil, fmt.Errorf("API returned status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var items []json.RawMessage
+	if err := json.Unmarshal(respBody, &items); err != nil {
+		return nil, fmt.Errorf("decode response: %w (body: %s)", err, string(respBody))
+	}
+
+	return items, nil
+}
+
+// videoIDFromURL extracts the video ID from a YouTube URL (best-effort; returns the raw string on failure).
+func videoIDFromURL(videoURL string) string {
+	// The video URL is always "https://www.youtube.com/watch?v=ID", so just take the v param
+	if u, err := url.Parse(videoURL); err == nil {
+		if v := u.Query().Get("v"); v != "" {
+			return v
+		}
+	}
+	return videoURL
+}
+
 // FetchTranscript fetches the transcript via the Apify actor fallback chain.
 // It tries each actor in order; if one fails with a recoverable error
 // (LANGUAGE_NOT_FOUND, empty transcript, etc.) it proceeds to the next.
+// If all actors fail, it retries the codepoetry actor with AI transcription
+// fallback enabled — this handles videos without native captions.
 func (p *ApifyProvider) FetchTranscript(ctx context.Context, videoID string, preferredLang string) (*types.YouTubeTranscriptResult, error) {
 	videoURL := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoID)
 	var lastErr error
 
+	// Step 1: try each actor normally (fast path — most videos have captions)
 	for _, actor := range p.actors {
 		result, err := p.tryActorTranscript(ctx, actor, videoURL, preferredLang)
 		if err != nil {
@@ -274,6 +373,38 @@ func (p *ApifyProvider) FetchTranscript(ctx context.Context, videoID string, pre
 		if result != nil {
 			p.actorName = actor.name
 			return result, nil
+		}
+	}
+
+	// Step 2: retry the codepoetry actor with AI transcription fallback enabled.
+	// This handles videos without native captions — the actor will use AI to
+	// transcribe the audio, allowing us to get both the transcript and metadata.
+	if len(p.actors) > 0 {
+		actor := p.actors[0]
+		items, err := p.callActorWithAIFallback(ctx, actor, videoURL, preferredLang)
+		if err == nil && len(items) > 0 {
+			result := actor.extractResult(items[0])
+			if result != nil && result.Error == "" {
+				content := result.TranscriptLLM
+				if content == "" {
+					content = result.TranscriptText
+				}
+				if content != "" {
+					p.actorName = actor.name + "(ai-fallback)"
+					source := "ai_generated"
+					if result.IsAIGenerated {
+						source = "ai_generated"
+					} else if result.IsAutoGenerated {
+						source = "auto_generated"
+					}
+					return &types.YouTubeTranscriptResult{
+						Content:       content,
+						Language:      result.Language,
+						Source:        source,
+						IsAIGenerated: true,
+					}, nil
+				}
+			}
 		}
 	}
 
