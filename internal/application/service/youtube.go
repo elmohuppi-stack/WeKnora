@@ -2,10 +2,13 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/Tencent/WeKnora/internal/infrastructure/youtube_transcript"
 	"github.com/Tencent/WeKnora/internal/logger"
@@ -103,6 +106,16 @@ func FetchYouTubeInfo(ctx context.Context, videoID string, preferredLang string)
 	metadata, err := prov.FetchMetadata(ctx, videoID)
 	if err != nil {
 		logger.Warnf(ctx, "Failed to fetch metadata for video %s via %s: %v", videoID, prov.Name(), err)
+		// Fallback: try YouTube oEmbed API (no API key needed, provides title + channel name)
+		if oembed, oembedErr := fetchYouTubeOEmbedMetadata(ctx, videoID); oembedErr == nil {
+			info.Title = oembed.Title
+			info.ChannelName = oembed.ChannelName
+			info.ChannelURL = oembed.ChannelURL
+			info.ThumbnailURL = oembed.ThumbnailURL
+			logger.Infof(ctx, "Fetched metadata via oEmbed fallback for video %s: title=%s channel=%s", videoID, oembed.Title, oembed.ChannelName)
+		} else {
+			logger.Warnf(ctx, "oEmbed fallback also failed for video %s: %v", videoID, oembedErr)
+		}
 	} else {
 		info.Title = metadata.Title
 		info.Description = metadata.Description
@@ -140,4 +153,59 @@ func FetchYouTubeInfo(ctx context.Context, videoID string, preferredLang string)
 	}
 
 	return info, nil
+}
+
+// oEmbedResponse represents the YouTube oEmbed API response.
+type oEmbedResponse struct {
+	Title        string `json:"title"`
+	AuthorName   string `json:"author_name"`
+	AuthorURL    string `json:"author_url"`
+	ThumbnailURL string `json:"thumbnail_url"`
+	Type         string `json:"type"`
+}
+
+// fetchYouTubeOEmbedMetadata fetches video metadata from the YouTube oEmbed API.
+// This is a lightweight fallback that requires no API key.
+func fetchYouTubeOEmbedMetadata(ctx context.Context, videoID string) (*YouTubeVideoInfo, error) {
+	videoURL := fmt.Sprintf("https://www.youtube.com/watch?v=%s", videoID)
+	apiURL := fmt.Sprintf("https://www.youtube.com/oembed?url=%s&format=json", url.QueryEscape(videoURL))
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, apiURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create oEmbed request: %w", err)
+	}
+
+	// Use a short timeout since oEmbed is fast
+	client := &http.Client{Timeout: 10 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("oEmbed request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("oEmbed returned status %d", resp.StatusCode)
+	}
+
+	var oembed oEmbedResponse
+	if err := json.NewDecoder(resp.Body).Decode(&oembed); err != nil {
+		return nil, fmt.Errorf("decode oEmbed response: %w", err)
+	}
+
+	if oembed.Title == "" {
+		return nil, fmt.Errorf("oEmbed returned empty title")
+	}
+
+	channelURL := oembed.AuthorURL
+	if channelURL == "" {
+		channelURL = fmt.Sprintf("https://www.youtube.com/channel/%s", videoID)
+	}
+
+	return &YouTubeVideoInfo{
+		VideoID:      videoID,
+		Title:        oembed.Title,
+		ChannelName:  strings.TrimSpace(oembed.AuthorName),
+		ChannelURL:   channelURL,
+		ThumbnailURL: oembed.ThumbnailURL,
+	}, nil
 }
