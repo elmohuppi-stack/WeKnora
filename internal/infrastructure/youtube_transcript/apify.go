@@ -236,13 +236,23 @@ func (p *ApifyProvider) FetchMetadata(ctx context.Context, videoID string) (*typ
 			continue
 		}
 
-		var holder metaHolder
-		if err := json.Unmarshal(items[0], &holder); err != nil || holder.Metadata == nil {
-			continue
+		// Try to parse metadata fields at the top level of the response item
+		// (this is the actual format returned by codepoetry and other actors).
+		var meta apifyMetadata
+		if err := json.Unmarshal(items[0], &meta); err == nil && meta.Title != "" {
+			p.actorName = actor.name
+			return mapMetadata(&meta, videoID), nil
 		}
 
-		p.actorName = actor.name
-		return mapMetadata(holder.Metadata, videoID), nil
+		// Fallback: try the metadata wrapper key for compatibility
+		var holder metaHolder
+		if err := json.Unmarshal(items[0], &holder); err == nil && holder.Metadata != nil {
+			p.actorName = actor.name
+			return mapMetadata(holder.Metadata, videoID), nil
+		}
+
+		// Metadata not found in this actor's response, try the next one
+		continue
 	}
 
 	return nil, fmt.Errorf("all Apify actors failed to fetch metadata for video %s", videoID)
